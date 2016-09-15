@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Analyzing source code for vulnerabilities: SAST theory, practice, and prospects - &#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="https://kochetkov.github.io/sast-theory-practice-and-prospects-en.html">
+
+        <meta name="author" content="Владимир Кочетков" />
+        <meta name="keywords" content="SAST,DAST,IAST,static code analysis,code analyzer,Application Inspector" />
+        <meta name="description" content="It would not be a big overstatement to say that the market for SAST (Static Application Security Testing) tools is currently booming. Research papers on SAST are published at least once every two months, new SAST tools become available every year, and whole sections at international information security conferences are dedicated to SAST’s role in software development. SAST tool vendors constantly bombard the prospective users with tons of information about their products, and it is not easy to understand which part of it is true, and which is just a marketing hype. Let’s try to understand the real capabilities of such tools, and what we should do if they cannot handle some issues. We are going to take a little dive into the theory that lies in the basis of state-of-the-art SAST tools." />
+
+        <meta property="og:site_name" content="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Analyzing source code for vulnerabilities: SAST theory, practice, and prospects"/>
+        <meta property="og:url" content="https://kochetkov.github.io/sast-theory-practice-and-prospects-en.html"/>
+        <meta property="og:description" content="It would not be a big overstatement to say that the market for SAST (Static Application Security Testing) tools is currently booming. Research papers on SAST are published at least once every two months, new SAST tools become available every year, and whole sections at international information security conferences are dedicated to SAST’s role in software development. SAST tool vendors constantly bombard the prospective users with tons of information about their products, and it is not easy to understand which part of it is true, and which is just a marketing hype. Let’s try to understand the real capabilities of such tools, and what we should do if they cannot handle some issues. We are going to take a little dive into the theory that lies in the basis of state-of-the-art SAST tools."/>
+        <meta property="article:published_time" content="2016-07-08" />
+            <meta property="article:section" content="Blog" />
+            <meta property="article:tag" content="SAST" />
+            <meta property="article:tag" content="DAST" />
+            <meta property="article:tag" content="IAST" />
+            <meta property="article:tag" content="static code analysis" />
+            <meta property="article:tag" content="code analyzer" />
+            <meta property="article:tag" content="Application Inspector" />
+            <meta property="article:author" content="Владимир Кочетков" />
+
+    <meta name="twitter:card" content="summary">
+        <meta name="twitter:site" content="@kochetkov_v">
+        <meta name="twitter:creator" content="@kochetkov_v">
+    <meta name="twitter:domain" content="https://kochetkov.github.io">
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://kochetkov.github.io/theme/css/bootstrap.kv.min.css" type="text/css"/>
+    <link href="https://kochetkov.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://kochetkov.github.io/theme/css/pygments/monokai.css" rel="stylesheet">
+        <link href="https://kochetkov.github.io/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://kochetkov.github.io/theme/css/style.css" type="text/css"/>
+
+        <link href="https://kochetkov.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()} ATOM Feed"/>
+
+
+
+        <link href="https://kochetkov.github.io/feeds/blog.atom.xml" type="application/atom+xml" rel="alternate"
+              title="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()} Blog ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="https://kochetkov.github.io/" class="navbar-brand">
+&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="https://kochetkov.github.io/category/blog.html">Блог</a>
+                        </li>
+                         <li><a href="https://kochetkov.github.io/pages/whoami-and-wastes.html">
+                             whoami &&&nbsp;wastes
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://kochetkov.github.io/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="https://kochetkov.github.io/sast-theory-practice-and-prospects-en.html"
+                       rel="bookmark"
+                       title="Permalink to Analyzing source code for vulnerabilities: SAST theory, practice, and prospects">
+                        Analyzing source code for vulnerabilities: <span class="caps">SAST</span> theory, practice, and&nbsp;prospects
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2016-07-08T04:00:00+03:00"> Пт 08 Июль 2016</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="https://kochetkov.github.io/tag/sast.html">SAST</a>
+        /
+	<a href="https://kochetkov.github.io/tag/dast.html">DAST</a>
+        /
+	<a href="https://kochetkov.github.io/tag/iast.html">IAST</a>
+        /
+	<a href="https://kochetkov.github.io/tag/static-code-analysis.html">static code analysis</a>
+        /
+	<a href="https://kochetkov.github.io/tag/code-analyzer.html">code analyzer</a>
+        /
+	<a href="https://kochetkov.github.io/tag/application-inspector.html">Application Inspector</a>
+    <span class="label label-default">Lang</span>
+	<a href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">ru</a>
+
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>It would not be a big overstatement to say that the <span class="caps">SAST</span> market is currently booming. Research papers on <span class="caps">SAST</span> are published at least once every two months, new <span class="caps">SAST</span> tools become available every year, and whole sections at international information security conferences are dedicated to <span class="caps">SAST</span>’s role in software development. <span class="caps">SAST</span> tool vendors constantly bombard the prospective users with tons of information about their products, and it is not easy to understand which part of it is true, and which is just a marketing hype. Let’s try to understand the real capabilities of such tools, and what we should do if they cannot handle some issues. We are going to take a little dive into the theory that lies in the basis of state-of-the-art <span class="caps">SAST</span>&nbsp;tools.</p>
+<h2>Turing, Rice and all, all,&nbsp;all</h2>
+<p><span class="caps">TL</span>/<span class="caps">DR</span>: The problem of static application security testing is algorithmically&nbsp;undecidable.</p>
+<p>Imagine a set of fully abstract programs (let’s call it P) that always hang on some inputs and halt after doing some operations on other inputs. Obviously, class P includes all theoretically possible programs, because each of them has this&nbsp;property. </p>
+<p>Now imagine that one of these programs is a code analyzer (let’s call it h) that can answer this simple question: Does an arbitrary program p of P hang on the given input n? Obviously, h can answer this question only if it completes its job; by doing that, it tells us that p hangs on n. In other words, if p(n) doesn’t halt, then h(p(n)) must complete its job in a finite number of steps; and if p(n) halts, then h(p(n)) must&nbsp;hang. </p>
+<p>Now imagine what happens if we try using that analyzer to answer this question: Will the analyzer hang if it tries to analyze itself analyzing itself? (Because p can be any program of P, so it can be h, too.) But in this case, if h(h(n)) halts, then the analyzing of h(n) hangs; and if h(h(n))) hangs, then the analyzing of h(n) halts. But h is h(n), so we have a contradiction, which means that an h-like analyzer cannot&nbsp;exist.</p>
+<p>The above is a loose summary of the proof of The Halting Theorem that was formulated by Alan Turing, the founder of the modern theoretical computer science, in 1936. The theorem states that there is no program able to analyze another program and answer the question whether that program would halt on a certain input. Well, maybe we could create a program that can answer the question about some other properties of programs under&nbsp;examination?</p>
+<p>Because set P includes all possible programs, we can always split it into two classes (let’s call them A and B) based on the existence of any nontrivial, invariant property in the programs. Here nontriviality and invariance means that any program of P either has that property or doesn’t have it. Moreover, either all functionally identical programs (which produce the same outputs when fed identical inputs) have that property, or none of them has&nbsp;it.</p>
+<p>Imagine that there exists a code analyzer (let’s call it q) that takes an arbitrary program p of P as an input, and halts if p belongs to one of the classes (A or B). For example, let it be class A. Let pa be a program that belongs to class A and gets caught in an endless loop on any input. Let’s also take an arbitrary program (pb) from class B. For each program p, let’s define program p&#8217; that takes input x and executes the following&nbsp;algorithm:</p>
+<ol>
+<li>p(p)</li>
+<li>pb(x)  </li>
+</ol>
+<p>Now let’s create program q&#8217; that takes an arbitrary program p as an input, creates for it p&#8217;, and calculates&nbsp;q(p&#8217;). </p>
+<p>If p&#8217; hangs on the first step, it means that p&#8217; is functionally identical to pa (and belongs to class A), so q&#8217; must halt immediately. If p&#8217; completes the first step, it means that p&#8217; is functionally identical to pb (and belongs to class B), so q&#8217; must hang. Therefore, for any program p, q&#8217;(p) halts if p(p) doesn’t halt. But q&#8217; can take the place of p, so p(p) halts only if p(p) doesn’t halt. Again, it is a&nbsp;contradiction. </p>
+<p>The statement that there is no program that can answer the question whether an arbitrary program has any nontrivial, invariant properties was proved by the scientist Henry Gordon Rice in 1953. Basically, his research has generalized the Halting Theorem, because the property of halting on a given input is nontrivial and invariant. Depending on the properties considered, Rice&#8217;s theorem has infinitely many practical values: “It is impossible to use a program to classify an algorithm implemented by another program,” “It is impossible to use a program to prove that two other programs implement one and the same algorithm,” “It is impossible to use a program to prove that another program doesn’t enter certain states on any inputs,” etc. We should consider the last example in more&nbsp;detail.</p>
+<p>When any (abstract or real) algorithm is being executed by a universal executing program (for example, by a virtual machine that emulates a real computer with its operating system), we can take a snapshot of that virtual machine, including the state of the application (algorithm) being executed in the address space of the virtual machine and its external environment, such as disk drives, the state of external devices, etc. Later we can restore that state from the snapshot and continue running the application from the very same point. In essence, the whole process of any program’s execution is a sequence of changing states that is determined by the program’s source code. If there are any errors in the configuration or implementation of the program or the virtual machine, it is highly probable that the control flow will enter a state that has  never been intended by the program’s&nbsp;developer.</p>
+<p>What is a vulnerability? It is an opportunity of using input data to make the control flow enter a state that allows the attacker to realize a threat regarding the data being processed by the program. Therefore, we can define the security of any program as its ability to always remain within the predetermined set of admissible states that determine its security policy, regardless of the initial input. In that case, the security analysis problem boils down to checking whether it is impossible for the program to enter any state not allowed by the security policy on an arbitrary input. That is, to the problem whose algorithmic undecidability has been long ago proved by Henry&nbsp;Rice.</p>
+<p>Does it mean that the whole <span class="caps">SAST</span> market is basically a snake oil industry? In theory – yes, it is. But in practice, as usually, the answer to that question is not that&nbsp;simple.</p>
+<h2><span class="caps">SAST</span> theory in&nbsp;practice</h2>
+<p>Even as pure theorists, we could ease some requirements of Rice’s statement for real programs executed in real environments. First, in theoretical computer science, a program is a mathematical abstraction that is equivalent to a Turing machine (<span class="caps">TM</span>), the most powerful computing automaton. However, in real programs only some code fragments are truly equivalent to <span class="caps">TM</span>. In terms of computation power, linear bounded automata, stack machines, and finite state machines are below <span class="caps">TM</span>. Even as pure theorists, we can analyze the security of stack machines and finite state&nbsp;machines.</p>
+<p>Second, <span class="caps">TM</span>’s distinguishing feature is that it can use a memory of an infinite size. This feature is the reason why we cannot get all possible states of a computation process – simply because there are an infinite number of them. But the amount of memory in real computers is far from infinite. What is even more important, in real programs the number of states that may be of some interest from the viewpoint of security analysis is also finite, though obscenely&nbsp;huge.</p>
+<p>Third, calculating a program’s properties based on Rice’s statement is a decidable problem for a number of small TMs that have few states and few possible transitions between them. It is hard to imagine a real program that has 2 to 4 states. But it is much easier to imagine a program’s <em>fragment</em> with that number of&nbsp;states.</p>
+<p>Therefore, we can effectively analyze code fragments that meet the above criteria. In practice it means&nbsp;that:</p>
+<ol>
+<li>
+<p>We can thoroughly analyze a code fragment without any program loops or recursion, because it is equivalent to a finite state&nbsp;machine;</p>
+</li>
+<li>
+<p>We can analyze a code fragment with some program loops or recursion if the exit conditions do not depend on input, by considering it as a finite state machine or a stack&nbsp;machine;</p>
+</li>
+<li>
+<p>If the exit conditions for the program loop or recursion depends on input whose length is reasonably limited, in some cases we can analyze the fragment as a system of linear bounded automata or a system of small&nbsp;TMs.</p>
+</li>
+</ol>
+<p>As for other code fragment types, alas, we cannot use the static approach to analyze them. Moreover, when developing source code security analyzers, software engineers have to trade off between <span class="caps">EXPSPACE</span> and <span class="caps">EXPTIME</span> on a daily basis. When they do manage to reduce even special cases to a sub-exponential algorithm, they feel happy like little kids, because it’s really awesome! How do you think, what will be the power of the set of possible values of variable parm1 at the last execution&nbsp;point?</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">parm1</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;parm1&quot;</span><span class="p">];</span>
+<span class="kt">var</span> <span class="n">count</span> <span class="p">=</span> <span class="kt">int</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;count&quot;</span><span class="p">]);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+<span class="p">{</span>
+    <span class="n">i</span> <span class="p">%</span> <span class="m">2</span> <span class="p">==</span> <span class="m">0</span> <span class="p">?</span>
+        <span class="n">parm1</span> <span class="p">=</span> <span class="n">parm</span> <span class="p">+</span> <span class="n">i</span><span class="p">.</span><span class="n">ToString</span><span class="p">():</span>
+        <span class="n">parm1</span> <span class="p">=</span> <span class="n">i</span><span class="p">.</span><span class="n">ToString</span><span class="p">()</span> <span class="p">+</span> <span class="n">parm</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm</span><span class="p">);</span>
+</pre></div>
+
+
+<p>That’s why we don’t have to worry too much about the theoretical limitations, because it is extremely unlikely that we would ever hit them when using any practically available computation power. However, the easing of the requirements has set the evolution of modern static code analyzers on the right course, so we should keep it in mind&nbsp;anyway.   </p>
+<h2><span class="caps">DAST</span>, <span class="caps">IAST</span>, and all, all,&nbsp;all</h2>
+<p>Unlike the static approach, where program code is analyzed without actually being executed, the dynamic approach (Dynamic Application Security Testing, <span class="caps">DAST</span>) requires having a runtime environment and executing the program on some inputs that are most useful for analysis purposes. Simply speaking, we can call <span class="caps">DAST</span> a “method of informed trial and error”: “Let’s feed these input data, which are characteristic for that kind of attack, to the program and see what happens.” This method has obvious drawbacks: In many cases we can’t quickly deploy the system to be analyzed (sometimes we can’t even build it), the system’s transition to a certain state may be the result of processing the previous inputs, and a comprehensive analysis of a real system’s behavior requires feeding it so many inputs that it is utterly impractical to try testing the system on each of&nbsp;them.</p>
+<p>Not long ago, Interactive Application Security Testing (<span class="caps">IAST</span>) – an approach that combined the strengths of <span class="caps">SAST</span> and <span class="caps">DAST</span> – was considered promising. <span class="caps">IAST</span>’s distinctive feature is that the <span class="caps">SAST</span> part generates inputs and the templates of expected results, and the <span class="caps">DAST</span> part tests the system on these inputs, prompting the human operator to interfere in ambiguous situations. The irony of this approach is that it has inherited both strengths and weaknesses of <span class="caps">SAST</span> and <span class="caps">DAST</span>, which calls in question its&nbsp;practicality.</p>
+<p>But who said that dynamic code analysis means that we have to execute the whole program? As we have already seen, we can use the static approach to analyze a major portion of the program’s code. Why can’t we use the dynamic approach to analyze only the remaining code fragments? It sounds like we have a&nbsp;plan…</p>
+<h2>Mumbo Jumbo™&nbsp;Inside</h2>
+<p>There are several classic approaches to static code analysis, which use different models for producing the properties of the code under examination. The most primitive and obvious approach is signature search. It is based on looking for occurrences of some template in the syntax code presentation model (which is usually a token flow or an abstract syntax tree). Some implementations of that approach use slightly more-complex models (semantic tree, its mapping to the graph of some data flow, etc.). But on the whole, this approach is only useful as a secondary one: It allows us to mark suspicious parts of the code within a linear time, so that later we can check them manually. Enough said about this approach; if you are interested in it, please read the <a href="http://blog.ptsecurity.com/search/label/AST">series of articles</a> by Ivan&nbsp;Kochurkin.</p>
+<p>More-complex approaches use code execution (not presentation or semantic) models. Such models usually can answer this question: Can a data flow under external control reach such an control flow point that it creates a vulnerability? In most cases, the model is a <a href="https://en.wikipedia.org/wiki/Control_flow_graph">control flow graph</a> or a <a href="https://en.wikipedia.org/wiki/Data_flow_diagram">data flow diagram</a>, or a combination of them (for example, a <a href="https://www.tu-braunschweig.de/Medien-DB/sec/pubs/2014-ieeesp.pdf">code property graph</a>). Such approaches have an obvious drawback: When analyzing any nontrivial code, answering the above question is not enough to successfully detect a vulnerability. For example, here’s a code&nbsp;fragment:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">requestParam</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
+<span class="kt">var</span> <span class="n">filteredParam</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">;</span>
+
+<span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">symbol</span> <span class="k">in</span> <span class="n">requestParam</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">symbol</span> <span class="p">&gt;=</span> <span class="sc">&#39;a&#39;</span> <span class="p">&amp;&amp;</span> <span class="n">symbol</span> <span class="p">&lt;=</span> <span class="sc">&#39;z&#39;</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">filteredParam</span> <span class="p">+=</span> <span class="n">symbol</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">filteredParam</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Based on the created model, the trivial graph-based analyzer will confirm that the data flow <code>Request.Params["param"]</code> can reach the control flow point <code>Response.Write(filteredParam)</code>, and that there is a vulnerability to <span class="caps">XSS</span> attacks there. Actually, that data flow is effectively filtered and cannot carry the attack vector! There are many methods that allow us to cover special cases associated with data flow preprocessing, but ultimately each of them means finding a reasonable balance between false positives and false negatives, also known as Type I errors and type <span class="caps">II</span>&nbsp;errors.</p>
+<p><img alt="Type 1 &amp; 2 errors" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/type12errors.jpg" /></p>
+<p>How can we minimize the number of errors of both types? We need to consider reachability conditions both for potentially vulnerable control flow points and for combinations of values of the data flows that can reach those points. Based on that information, we can create a system of equations whose set of solutions will give us all possible inputs that are necessary to reach the potentially vulnerable point in the program. The intersection of this set with the set of all possible attack vectors will produce the set of all inputs that bring the program to a vulnerable state. It sounds great, but how can we build a model that contains all necessary&nbsp;information?</p>
+<h2>Abstract interpretation and symbolic&nbsp;computation</h2>
+<p>Suppose, we need to find out the sign of the number produced by this expression: <code>-42 / 8 * 100500</code>. The simplest way to do it is to calculate the result and check if it is negative. The computation of an expression by using specific values of all arguments is known as “concrete computation.” But we can also solve this problem in a different way. Imagine that for some reason the concrete computation of this expression cannot be done. For example, because a variable has been added: <code>-42 / 8 * 100500 * x</code>. Let’s define an abstract arithmetic in which the result of operations on numbers is defined only by the signs, while the absolute values of all arguments are&nbsp;ignored:</p>
+<div class="highlight"><pre><span></span>(+a) = (+)
+(-a) = (-)
+(-) * (+) = (-)
+(-) / (+) = (-)  
+...
+(-) + (+) = (+-)
+...
+</pre></div>
+
+
+<p>Let’s interpret the initial expression within this semantics: <code>(-) / (+) * (+) * (+)</code> -&gt; <code>(-) * (+) * (+)</code> -&gt; <code>(-) * (+)</code> -&gt; <code>(-)</code>. This approach will give an unambiguous answer to the question as long as the expression does not contain any addition or subtraction operators. Let’s modify our arithmetic to consider the absolute values of arguments,&nbsp;too:</p>
+<div class="highlight"><pre><span></span>(-a) * (+b) = (-c)
+(-a) / (+b) = (-c)  
+...
+(-a) + (+b) = 
+    a &lt;= b -&gt; (+)
+    a &gt;  b -&gt; (-)
+...
+</pre></div>
+
+
+<p>If we interpret the expression <code>-42 / 8 * 100500 + x</code> based on the new semantics, the result will be <code>x &gt;= -527625 -&gt; (+), x &lt; -527625 -&gt; (-)</code>.</p>
+<p>The above approach is called <a href="https://en.wikipedia.org/wiki/Abstract_interpretation">abstract interpretation</a>. It is formally defined as a stable approximation of the semantics of expressions, based on monotonic functions over ordered sets. Simply speaking, it is an interpretation of expressions without a concrete computation of them, intended to gather information within the given semantic field. Let’s smoothly go from interpreting some expressions to interpreting program code in some programming language. As for the semantic field, let’s define the semantics of the language, complemented with the rule to handle all inputs as unknown variables (symbolic values). The result is an approach known as “[symbolic execution,]”(https://en.wikipedia.org/wiki/Symbolic_execution) which lies in the basis of most promising <span class="caps">SAST</span>&nbsp;tools.</p>
+<p>It is symbolic computation that allows us to create a context graph for symbolic computation (also known as a computation flow graph). It is a model that comprehensively describes the computation process of the program under examination. That model was considered in the report <a href="http://www.slideshare.net/kochetkov.vladimir/automated-patching-for-vulnerable-source-code/14">“Automated generation of source code patches”</a>, and the model’s application for code security analysis was covered in the article <a href="https://www.ptsecurity.com/upload/ptcom/PT_Positive_Research_2015_EN_web.pdf">&#8220;Source Code Security Assessment and Automatic Exploit Generation&#8221;</a> (p. 23-24). It doesn’t make much sense for us to cover them again in this article. It should be noted that the model allows us to get reachability conditions both for any control flow point and for sets of values of input arguments. That is, it is just what we need to solve our&nbsp;problem.</p>
+<h2>Vulnerability search based on the computation flow&nbsp;graph</h2>
+<p>If we formalize vulnerability criteria to a certain attack class in terms of the computation flow graph, we can implement code security analysis by finding out the properties of a concrete model obtained as a result of the abstract interpretation of the code under examination. For example, we can formalize the criteria of vulnerability to any injection attacks (SQLi, <span class="caps">XSS</span>, XPATHi, Path Traversal, etc.) as&nbsp;follows:</p>
+<blockquote>
+<p>Let C be the computation flow graph of the code under&nbsp;examination.</p>
+<p>Let pvf(t) be the reachable control flow node in C, so that pvf(t) is the call of the function of direct or indirect interpretation of text t that conforms to formal grammar&nbsp;G.</p>
+<p>Let e be the input data argument flow in&nbsp;С. </p>
+<p>Let De be the set of data flows in C that are derived from e and reachable at the pvf(t) invocation&nbsp;point.</p>
+<p>Then the program is vulnerable to injection attacks at the pvf(t) invocation point if t belongs to De and the set of values of De includes at least one pair of elements which, if syntactically parsed in conformance with grammar G, produces trees that are not isomorphic to each&nbsp;other.</p>
+</blockquote>
+<p>We can formalize vulnerabilities to other attack classes in a similar manner. However, it should be noted that not all vulnerability types can be formalized within a model created based on the code under examination. In some cases, we may need more information. For example, to formalize vulnerabilities to attacks against business logic, we need to have formalized rules for the program’s application domain; to formalize vulnerabilities to attacks against access control, we need formalized access control policies;&nbsp;etc.</p>
+<h2>Ideal – that is, purely theoretical – code security&nbsp;analyzer</h2>
+<p>Let’s forget about the harsh reality for awhile and try answering this question: If a hypothetical Ideal Analyzer (<span class="caps">IA</span>) could exist, what functionality should it&nbsp;have?</p>
+<p>First, it should have the strengths of both <span class="caps">SAST</span> and <span class="caps">DAST</span>, but do not have their weaknesses. Among other things, it means that <span class="caps">IA</span> should be able to analyze any existing program code (source code or binary code) without requiring its completeness or the program to be deployed in the runtime environment. In other words, <span class="caps">IA</span> should be able to analyze projects with missing external dependencies, or when some other factors do not let us to build or deploy the program. Moreover, handling code fragments that contain references to missing dependencies should be implemented as completely as possible in each particular case. On the other hand, <span class="caps">IA</span> should not only be able to avoid the theoretical limitations imposed by the Turing computation model, but also complete scanning within a reasonable time, consume a reasonable amount of memory, and, when possible, stay in the sub-exponential “weight&nbsp;category.”</p>
+<p>Second, the probability of Type I errors should be minimized by creating and solving systems of logical equations and generating a working attack vector that allows the user to confirm the existence of the vulnerability in one&nbsp;click. </p>
+<p>Third, <span class="caps">IA</span> should effectively deal with Type <span class="caps">II</span> errors by allowing the user to check all potentially vulnerable control flow points manually if <span class="caps">IA</span> was unable to either prove or disprove their&nbsp;vulnerability.</p>
+<p>Using a model based on symbolic computation allows us to implement all of the above requirements by-design, except for the ones related to theoretical limitations and sub-exponentiality. Our plan – to employ dynamic code analysis when static code analysis fails – is just what we&nbsp;need! </p>
+<h2>Partial computation, inverse functions, and deferred&nbsp;interpretation</h2>
+<p>Imagine that <span class="caps">IA</span> contains a knowledge base that describes the semantics of input transformation functions implemented in the standard language library or the program’s runtime environment, in the most popular frameworks and CMSs. For example, imagine that the functions Base64Decode and Base64Encode are mutually inverse, or that each call of StringBuilder.Append adds a new line to the string already stored in the temporary variable of that class, etc. Thanks to all that knowledge, <span class="caps">IA</span> doesn’t have to “fall through” into the library code whose analysis is subject to all computational limitations,&nbsp;too:</p>
+<div class="highlight"><pre><span></span><span class="c1">// The value of cond2 required for meeting the condition will be produced by the solver based on the knowledge base on inverse functions </span>
+<span class="k">if</span> <span class="p">(</span><span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">Convert</span><span class="p">.</span><span class="n">FromBase64String</span><span class="p">(</span><span class="n">cond2</span><span class="p">))</span> <span class="p">==</span> <span class="s">&quot;true&quot;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">var</span> <span class="n">sb</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="p">();</span>
+    <span class="n">sb</span><span class="p">.</span><span class="n">Append</span><span class="p">(</span><span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">]);</span>
+    <span class="c1">// The value of sb.ToString will be obtained by emulating the semantics of StringBuilder described in the knowledge base on library functions</span>
+    <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">sb</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>    
+<span class="p">}</span>
+</pre></div>
+
+
+<p>But what if there is a call of a function in the code, but there is no description of that function in the <span class="caps">IA</span> knowledge base? Imagine that <span class="caps">IA</span> can use a virtual sandbox environment that allows it to run an arbitrary fragment of the code under examination in the given context and get the result of its execution. Let’s call it “partial computation.” In that case, before “falling through” into an unknown function and starting to interpret it abstractly, <span class="caps">IA</span> can try doing a trick called “partial fuzzing.” The general idea of that trick is that we can prebuild a knowledge base on library transformation functions and any combinations of sequential calls of such functions based on the already-known combinations of test data. Having that knowledge base, we can execute an unknown function on the same combinations of data and then compare the results to the samples from the knowledge base. If the results of executing the unknown function match the results of executing a known sequence of library functions, it would mean that now <span class="caps">IA</span> knows the semantics of the unknown function, so there is no need to interpret the&nbsp;function.</p>
+<p>But if the set of input values of all data flows are known for a code fragment that doesn’t contain any dangerous operators, <span class="caps">IA</span> can simply execute that fragment on all possible data flows and use the results instead of abstractly interpreting that fragment. That fragment can be of any computation power class, without any impact whatsoever on the results of its execution. Moreover, even if we do not know beforehand the the set of input values of data flows for a code fragment, <span class="caps">IA</span> can defer the interpretation of that fragment until it starts to solve the equation for the specific dangerous operator. At the solution step, an additional limitation about the presence of specific attack vectors in input data is imposed on the set of input values, which may allow us to make assumptions about the set of input values for the deferred fragment, and thereby partially compute it at this&nbsp;step.</p>
+<p>Moreover, at the solution step, <span class="caps">IA</span> can simply take the final reachability formula for the dangerous point and its arguments (it would be easier to build the formula by using the syntax and semantics of the language used in the code under examination) and fuzzy it thoroughly on all known vector values to get their subset that can pass through all filter functions of the&nbsp;formula:</p>
+<div class="highlight"><pre><span></span><span class="c1">// The value of the Response.Write argument that passes unchanged through the filter function can be obtained by fuzzing its formula by substituting the values of all possible XSS vectors in parm1 </span>
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">CustomFilterLibrary</span><span class="p">.</span><span class="n">CustomFilter</span><span class="p">.</span><span class="n">Filter</span><span class="p">(</span><span class="n">parm1</span><span class="p">));</span>
+</pre></div>
+
+
+<p>The above approaches allow us to analyze a good share of Turing-complete code fragments but require significant efforts by the software engineers, who need to build knowledge bases and optimize the emulation of semantics of standard types, and to implement the sandbox for partial code execution (surely nobody wants for something like File.Delete to be executed in program loop during the analysis). The engineers also need to provide support for fuzzing of n-local unknown functions, integrate the concept of partial execution with the <span class="caps">SMT</span> solver, etc. Nevertheless, there are no substantial limitations to doing all these things, quite unlike the drawbacks of the classic <span class="caps">SAST</span>.</p>
+<h2>When the ugly duck-typing becomes a&nbsp;swan</h2>
+<p><img alt="Duck-typing" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ducktyping.jpg" /></p>
+<p>Imagine that we need to analyze the following&nbsp;code:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">argument</span> <span class="p">=</span> <span class="s">&quot;harmless value&quot;</span><span class="p">;</span>
+
+<span class="c1">// UnknownType - a type that is declared in a missing dependency </span>
+<span class="n">UnknownType</span><span class="p">.</span><span class="n">Property1</span> <span class="p">=</span> <span class="n">parm1</span><span class="p">;</span>
+<span class="n">UnknownType</span><span class="p">.</span><span class="n">Property2</span> <span class="p">=</span> <span class="n">UnknownType</span><span class="p">.</span><span class="n">Property1</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">UnknownType</span><span class="p">.</span><span class="n">Property3</span> <span class="p">==</span> <span class="s">&quot;true&quot;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">argument</span> <span class="p">=</span> <span class="n">UnknownType</span><span class="p">.</span><span class="n">Property2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">argument</span><span class="p">);</span>
+</pre></div>
+
+
+<p>A human can easily detect a reachable <span class="caps">XSS</span> vulnerability in the above code fragment. However, the majority of the existing static code analyzers will miss it simply because they don’t know anything about the UnknownType type. But <span class="caps">IA</span> only needs to forget about static typing and use duck typing instead. The semantics of interpretation of such constructs should be completely dependent on the context of their use. Yes, the interpreter doesn’t know what <code>UnknownType.Property1</code> is – a property, a field, or even a delegate (a reference to a method in C#). But because operations on it are done as if it is a variable-member of a specific type, the interpreter can simply process it in the respective manner. And if, for example, <span class="caps">IA</span> finds the construct <code>UnknownType.Property1()</code> further in the code, it can simply interpret the call of the method, a reference to which has been earlier attributed to Property1. Etcetera, etcetera, in keeping with the best traditions of duck&nbsp;breeders.</p>
+<h2>Taking&nbsp;stock</h2>
+<p>Surely, there are tons of bells and whistles which supposedly make one code analyzer better than another, at least from the vendor’s viewpoint. But if the analyzer’s engine cannot provide even the basic functionality, what’s the point of having lots of trendy features? To make the users happy, the analyzer’s developers must strive to provide the functionality that is as close to that of the <span class="caps">IA</span> as possible. Otherwise, you can just forget about any actual security of the projects checked by the&nbsp;analyzer. </p>
+<p>Some years ago, a customer of ours asked us to analyze the security of a system he was developing. Among the introductory data, he enclosed a report of code analysis done by an analyzing product that was the leader of the <span class="caps">SAST</span> tools market at that time. The report contained about two thousand entries, most of which eventually proved to be false positives. But the worst part was what was missing in the report. By manually analyzing the code, we have found dozens of vulnerable points that had been missed by the leading analyzer! So using such analyzers does more harm than good: You waste your time on manually checking all false positives, and the presence of false negatives creates an illusion of security. By the way, that case was one of the reasons why we’ve decided to develop our own&nbsp;analyzer.</p>
+<h2><span class="dquo">&#8220;</span>Talk is cheap. Show me the&nbsp;code.&#8221;</h2>
+<p>It would be amiss not to complete the article with a small code sample that allows you to check the “degree of ideality” of any analyzer in practice. Presto! Below you can see the code that includes all basic cases covered by the approach to abstract interpretation described in this article, but not covered by the more-primitive approaches. Each case has been implemented as trivially as possible and contains few instructions. Though the example is intended for C#/<span class="caps">ASP</span>.Net WebForms, it does not contain any specifics and can be easily translated into any other <span class="caps">OOP</span> code or adapted for any Web&nbsp;framework. </p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">parm1</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;parm1&quot;</span><span class="p">];</span>
+<span class="k">const</span> <span class="kt">string</span> <span class="n">cond1</span> <span class="p">=</span> <span class="s">&quot;ZmFsc2U=&quot;</span><span class="p">;</span> <span class="c1">// &quot;false&quot; in base64</span>
+<span class="n">Action</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">pvo</span> <span class="p">=</span> <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">;</span>
+
+<span class="c1">// False-negative</span>
+<span class="c1">// An analyzer that doesn’t interpret the control flow by functional data flows will not report a vulnerability here</span>
+<span class="n">pvo</span><span class="p">(</span><span class="n">parm1</span><span class="p">);</span>
+
+<span class="c1">// If the analyzer requires compiled code, delete this fragment</span>
+<span class="cp">#region</span>
+
+<span class="kt">var</span> <span class="n">argument</span> <span class="p">=</span> <span class="s">&quot;harmless value&quot;</span><span class="p">;</span>
+
+<span class="n">UnknownType</span><span class="p">.</span><span class="n">Property1</span> <span class="p">=</span> <span class="n">parm1</span><span class="p">;</span>
+<span class="n">UnknownType</span><span class="p">.</span><span class="n">Property2</span> <span class="p">=</span> <span class="n">UnknownType</span><span class="p">.</span><span class="n">Property1</span><span class="p">;</span>
+<span class="n">UnknownType</span><span class="p">.</span><span class="n">Property3</span> <span class="p">=</span> <span class="n">cond1</span><span class="p">;</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">UnknownType</span><span class="p">.</span><span class="n">Property3</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">argument</span> <span class="p">=</span> <span class="n">UnknownType</span><span class="p">.</span><span class="n">Property2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">// False-positive</span>
+<span class="c1">// An analyzer that ignores noncompiled code will report a vulnerability here</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">argument</span><span class="p">);</span>
+
+<span class="cp">#endregion</span>
+
+<span class="c1">// False-positive</span>
+<span class="c1">// An analyzer that ignores execution point reachability conditions will report a vulnerability here</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">cond1</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span> <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm1</span><span class="p">);</span> <span class="p">}</span>
+
+<span class="c1">// False-positive</span>
+<span class="c1">// An analyzer that ignores the semantics of standard filter functions will report a vulnerability here</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">WebUtility</span><span class="p">.</span><span class="n">HtmlEncode</span><span class="p">(</span><span class="n">parm1</span><span class="p">));</span>
+
+<span class="c1">// False-positive</span>
+<span class="c1">// An analyzer that ignores the semantics of nonstandard filter functions will report a vulnerability here</span>
+<span class="c1">// (CustomFilter.Filter implements the logic of `s.Replace(&quot;&lt;&quot;, string.Empty).Replace(&quot;&gt;&quot;, string.Empty)`)</span>
+<span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">CustomFilterLibrary</span><span class="p">.</span><span class="n">CustomFilter</span><span class="p">.</span><span class="n">Filter</span><span class="p">(</span><span class="n">parm1</span><span class="p">));</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">Convert</span><span class="p">.</span><span class="n">FromBase64String</span><span class="p">(</span><span class="n">cond1</span><span class="p">))</span> <span class="p">==</span> <span class="s">&quot;true&quot;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// False-positive</span>
+    <span class="c1">// An analyzer that ignores the semantics of standard encoding functions will report a vulnerability here</span>
+    <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="m">10</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&lt;</span> <span class="m">15</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+    <span class="p">{</span>
+        <span class="n">sum</span> <span class="p">+=</span> <span class="n">i</span> <span class="p">+</span> <span class="n">j</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">sum</span> <span class="p">!=</span> <span class="m">1725</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// False-positive</span>
+    <span class="c1">// An analyzer that approximates or ignores the interpretation of program loops will report a vulnerability here</span>
+    <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">var</span> <span class="n">sb</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="p">();</span>
+<span class="n">sb</span><span class="p">.</span><span class="n">Append</span><span class="p">(</span><span class="n">cond1</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">sb</span><span class="p">.</span><span class="n">ToString</span><span class="p">()</span> <span class="p">==</span> <span class="s">&quot;true&quot;</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// False-positive</span>
+    <span class="c1">// An analyzer that does not interpret the semantics of standard library types will report a vulnerability here</span>
+    <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>The result of analyzing this code should be a report of a single vulnerability to <span class="caps">XSS</span> attacks in the expression <code>pvo(parm1)</code>.</p>
+<p>You can join us and compile a ready-to-scan project at <a href="https://github.com/kochetkov/IAMeter/">GitHub</a> (<a href="https://github.com/kochetkov/IAMeter/archive/master.zip">zip</a>)</p>
+<p>But, as the saying goes, a picture is worth a thousand words. So we checked our own analyzer, coincidentally called <a href="https://www.ptsecurity.com/products/#ai"><span class="caps">AI</span></a>, on conformance to <span class="caps">IA</span>:  </p>
+<p><a href="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png"><img alt="IA" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png" /></a></p>
+<p>Have you already checked your analyzer?&nbsp;;)</p>
+<h2>A little bonus for the most patient&nbsp;reader</h2>
+<p>Welcome to the public alpha test of our freeware tool Approof! It doesn’t include the code analysis functionality and doesn’t implement all of the above semitheoretical stuff. Nonetheless, Approof can detect vulnerable external components, configuration defects, and sensible information, as well as injected web shells and&nbsp;malware:</p>
+<p><img alt="Approof" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/approof.png" /></p>
+<p>You can download Approof from our <a href="https://approof.ptsecurity.com/">official website</a>. Before using the tool, please read the license agreement. When analyzing code, Approof collects nonconfidential statistics on the project (<span class="caps">CLOC</span>, file types, frameworks used, etc.) and optionally sends it to the <span class="caps">PT</span> server. You can turn off the sending of statistics or take a look at the raw json that contains the collected data via the tool’s About&nbsp;menu.</p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Комментарии</h2>
+
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'kochetkov'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'sast-theory-practice-and-prospects';
+                var disqus_url = 'https://kochetkov.github.io/sast-theory-practice-and-prospects-en.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-4" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+    <li class="list-group-item"><h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4></li>
+    <div id="twitter_timeline">
+        <a class="twitter-timeline" data-chrome="noheader nofooter transparent" href="https://twitter.com/kochetkov_v" data-widget-id="353079324083097600">Tweets by kochetkov_v</a>
+    </div>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+
+
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Recent Posts</span></h4>
+                <ul class="list-group" id="recentposts">
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">
+                            Ищем уязвимости в коде: теория, практика и перспективы <span class="caps">SAST</span>
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/following-the-tracks-of-phdays-6.html">
+                            По следам PHDays <span class="caps">VI</span>
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/phdays6-positive-development-user-group-workshop.html">
+                            Семинар Positive Development User&nbsp;Group
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/blog-movement.html">
+                            Переезд&nbsp;блога
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/webinar-applied-theory-of-the-application-security.html">
+                            По следам вебинара &#8220;Прикладная теория Application&nbsp;Security&#8221;
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="https://kochetkov.github.io/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/analizator-koda.html">
+                            анализатор кода
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/application-inspector.html">
+                            Application Inspector
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/appsec.html">
+                            appsec
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/blog.html">
+                            блог
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/dast.html">
+                            DAST
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/iast.html">
+                            IAST
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/meropriiatiia.html">
+                            мероприятия
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/phdays.html">
+                            phdays
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/razrabotka.html">
+                            разработка
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/sast.html">
+                            SAST
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/static-code-analysis.html">
+                            static code analysis
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/staticheskii-analiz-koda.html">
+                            статический анализ кода
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/vebinary.html">
+                            вебинары
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+        <div id="gh_repos">
+            <p class="list-group-item">Status updating...</p>
+        </div>
+            <a href="https://github.com/kochetkov">@kochetkov</a> on GitHub
+    </li>
+    </ul>
+</section>
+            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2016 Владимир Кочетков
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>              <p><small>  <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Содержимое сайа
+  распространяется на условиях <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, если явно не оговорено иное. Все материалы отражают частную точку зрения их автора и не могут рассматриваться в качестве официальной позиции каких-либо организаций и сообществ.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer><script src="https://kochetkov.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://kochetkov.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="https://kochetkov.github.io/theme/js/respond.min.js"></script>
+
+    <!-- GitHub JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (!window.jXHR) {
+                var jxhr = document.createElement('script');
+                jxhr.type = 'text/javascript';
+                jxhr.src = 'https://kochetkov.github.io/theme/js/jXHR.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(jxhr, s);
+            }
+
+            github.showRepos({
+                user: 'kochetkov',
+                count: 5,
+                skip_forks: false,
+                target: '#gh_repos'
+            });
+        });
+    </script>
+    <script src="https://kochetkov.github.io/theme/js/github.js" type="text/javascript"></script>
+    <!-- End GitHub JS Code -->
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'kochetkov'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
+    <!-- Google Analytics Universal -->
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-71486437-1', '');
+        ga('send', 'pageview');
+    </script>
+    <!-- End Google Analytics Universal Code -->
+
+</body>
+</html>
