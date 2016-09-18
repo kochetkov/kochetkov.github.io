@@ -236,7 +236,7 @@
 
 
 &lt;p&gt;Результатом анализа данного кода должно являться сообщение о единственной уязвимости к атакам &lt;span class="caps"&gt;XSS&lt;/span&gt; в выражении &lt;code&gt;pvo(parm1)&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Вступить и компилировать с готовым к сканированию проектом можно на &lt;a href="https://github.com/kochetkov/IAMeter/"&gt;GitHub&lt;/a&gt; (&lt;a href="https://github.com/kochetkov/IAMeter/archive/master.zip"&gt;zip&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;Вступить и компилировать с готовым к сканированию проектом можно &lt;a href="https://kochetkov.github.io/uploads/IAMeter.zip"&gt;здесь&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Но, как говорится, &amp;#8220;лучше один раз увидеть&amp;#8230;&amp;#8221; и, в первую очередь, мы проверили на соответствие &lt;span class="caps"&gt;IA&lt;/span&gt; разрабатываемый нами анализатор, по чистой случайности называющийся &lt;a href="http://ai.ptsecurity.ru/"&gt;&lt;span class="caps"&gt;AI&lt;/span&gt;&lt;/a&gt;:  &lt;/p&gt;
 &lt;p&gt;&lt;a href="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_ru.png"&gt;&lt;img alt="IA" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_ru.png" /&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;А вы - уже проверили свой?&amp;nbsp;;)&lt;/p&gt;
@@ -480,7 +480,7 @@
 
 
 &lt;p&gt;The result of analyzing this code should be a report of a single vulnerability to &lt;span class="caps"&gt;XSS&lt;/span&gt; attacks in the expression &lt;code&gt;pvo(parm1)&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;You can join us and compile a ready-to-scan project at &lt;a href="https://github.com/kochetkov/IAMeter/"&gt;GitHub&lt;/a&gt; (&lt;a href="https://github.com/kochetkov/IAMeter/archive/master.zip"&gt;zip&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;You can join us and compile a ready-to-scan project &lt;a href="https://kochetkov.github.io/uploads/IAMeter.zip"&gt;here&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;But, as the saying goes, a picture is worth a thousand words. So we checked our own analyzer, coincidentally called &lt;a href="https://www.ptsecurity.com/products/#ai"&gt;&lt;span class="caps"&gt;AI&lt;/span&gt;&lt;/a&gt;, on conformance to &lt;span class="caps"&gt;IA&lt;/span&gt;:  &lt;/p&gt;
 &lt;p&gt;&lt;a href="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png"&gt;&lt;img alt="IA" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png" /&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;Have you already checked your analyzer?&amp;nbsp;;)&lt;/p&gt;

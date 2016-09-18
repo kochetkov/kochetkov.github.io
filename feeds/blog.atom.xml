@@ -236,7 +236,7 @@
 
 
 &lt;p&gt;Результатом анализа данного кода должно являться сообщение о единственной уязвимости к атакам &lt;span class="caps"&gt;XSS&lt;/span&gt; в выражении &lt;code&gt;pvo(parm1)&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Вступить и компилировать с готовым к сканированию проектом можно на &lt;a href="https://github.com/kochetkov/IAMeter/"&gt;GitHub&lt;/a&gt; (&lt;a href="https://github.com/kochetkov/IAMeter/archive/master.zip"&gt;zip&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;Вступить и компилировать с готовым к сканированию проектом можно &lt;a href="https://kochetkov.github.io/uploads/IAMeter.zip"&gt;здесь&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Но, как говорится, &amp;#8220;лучше один раз увидеть&amp;#8230;&amp;#8221; и, в первую очередь, мы проверили на соответствие &lt;span class="caps"&gt;IA&lt;/span&gt; разрабатываемый нами анализатор, по чистой случайности называющийся &lt;a href="http://ai.ptsecurity.ru/"&gt;&lt;span class="caps"&gt;AI&lt;/span&gt;&lt;/a&gt;:  &lt;/p&gt;
 &lt;p&gt;&lt;a href="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_ru.png"&gt;&lt;img alt="IA" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_ru.png" /&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;А вы - уже проверили свой?&amp;nbsp;;)&lt;/p&gt;
