@@ -11,8 +11,7 @@
 &lt;p&gt;подробный &lt;a href="http://portal.idc.ac.il/en/schools/cs/research/documents/sinai_2011.pdf"&gt;разбор&lt;/a&gt; реализаций &lt;span class="caps"&gt;PRNG&lt;/span&gt; в стандартных библиотеках языков C, Java, C#, &lt;span class="caps"&gt;PHP&lt;/span&gt;;&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;краткая [шпаргалка]
-(https://paragonie.com/blog/2016/05/how-generate-secure-random-numbers-in-various-programming-languages) о генерации криптографических случайных чисел в различных языках (включая многострадальный &lt;span class="caps"&gt;PHP&lt;/span&gt;);&lt;/p&gt;
+&lt;p&gt;краткая &lt;a href="https://paragonie.com/blog/2016/05/how-generate-secure-random-numbers-in-various-programming-languages"&gt;шпаргалка&lt;/a&gt; о генерации криптографических случайных чисел в различных языках (включая многострадальный &lt;span class="caps"&gt;PHP&lt;/span&gt;);&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;неплохая &lt;a href="https://jazzy.id.au/tags/prng.html"&gt;серия статей&lt;/a&gt; о техниках взлома различных &lt;span class="caps"&gt;PRNG&lt;/span&gt;;&lt;/p&gt;
