@@ -200,7 +200,7 @@
 
 
 <p>Based on the created model, the trivial graph-based analyzer will confirm that the data flow <code>Request.Params["param"]</code> can reach the control flow point <code>Response.Write(filteredParam)</code>, and that there is a vulnerability to <span class="caps">XSS</span> attacks there. Actually, that data flow is effectively filtered and cannot carry the attack vector! There are many methods that allow us to cover special cases associated with data flow preprocessing, but ultimately each of them means finding a reasonable balance between false positives and false negatives, also known as Type I errors and type <span class="caps">II</span>&nbsp;errors.</p>
-<p><img alt="Type 1 &amp; 2 errors" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/type12errors.jpg" /></p>
+<p><img alt="Type 1 &amp; 2 errors" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/type12errors.jpg"></p>
 <p>How can we minimize the number of errors of both types? We need to consider reachability conditions both for potentially vulnerable control flow points and for combinations of values of the data flows that can reach those points. Based on that information, we can create a system of equations whose set of solutions will give us all possible inputs that are necessary to reach the potentially vulnerable point in the program. The intersection of this set with the set of all possible attack vectors will produce the set of all inputs that bring the program to a vulnerable state. It sounds great, but how can we build a model that contains all necessary&nbsp;information?</p>
 <h2>Abstract interpretation and symbolic&nbsp;computation</h2>
 <p>Suppose, we need to find out the sign of the number produced by this expression: <code>-42 / 8 * 100500</code>. The simplest way to do it is to calculate the result and check if it is negative. The computation of an expression by using specific values of all arguments is known as “concrete computation.” But we can also solve this problem in a different way. Imagine that for some reason the concrete computation of this expression cannot be done. For example, because a variable has been added: <code>-42 / 8 * 100500 * x</code>. Let’s define an abstract arithmetic in which the result of operations on numbers is defined only by the signs, while the absolute values of all arguments are&nbsp;ignored:</p>
@@ -267,7 +267,7 @@
 
 <p>The above approaches allow us to analyze a good share of Turing-complete code fragments but require significant efforts by the software engineers, who need to build knowledge bases and optimize the emulation of semantics of standard types, and to implement the sandbox for partial code execution (surely nobody wants for something like File.Delete to be executed in program loop during the analysis). The engineers also need to provide support for fuzzing of n-local unknown functions, integrate the concept of partial execution with the <span class="caps">SMT</span> solver, etc. Nevertheless, there are no substantial limitations to doing all these things, quite unlike the drawbacks of the classic <span class="caps">SAST</span>.</p>
 <h2>When the ugly duck-typing becomes a&nbsp;swan</h2>
-<p><img alt="Duck-typing" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ducktyping.jpg" /></p>
+<p><img alt="Duck-typing" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ducktyping.jpg"></p>
 <p>Imagine that we need to analyze the following&nbsp;code:</p>
 <div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">argument</span> <span class="p">=</span> <span class="s">&quot;harmless value&quot;</span><span class="p">;</span>
 
@@ -367,11 +367,11 @@
 <p>The result of analyzing this code should be a report of a single vulnerability to <span class="caps">XSS</span> attacks in the expression <code>pvo(parm1)</code>.</p>
 <p>You can join us and compile a ready-to-scan project <a href="https://kochetkov.github.io/uploads/IAMeter.zip">here</a></p>
 <p>But, as the saying goes, a picture is worth a thousand words. So we checked our own analyzer, coincidentally called <a href="https://www.ptsecurity.com/products/#ai"><span class="caps">AI</span></a>, on conformance to <span class="caps">IA</span>:  </p>
-<p><a href="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png"><img alt="IA" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png" /></a></p>
+<p><a href="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png"><img alt="IA" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ai_en.png"></a></p>
 <p>Have you already checked your analyzer?&nbsp;;)</p>
 <h2>A little bonus for the most patient&nbsp;reader</h2>
 <p>Welcome to the public alpha test of our freeware tool Approof! It doesn’t include the code analysis functionality and doesn’t implement all of the above semitheoretical stuff. Nonetheless, Approof can detect vulnerable external components, configuration defects, and sensible information, as well as injected web shells and&nbsp;malware:</p>
-<p><img alt="Approof" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/approof.png" /></p>
+<p><img alt="Approof" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/approof.png"></p>
 <p>You can download Approof from our <a href="https://approof.ptsecurity.com/">official website</a>. Before using the tool, please read the license agreement. When analyzing code, Approof collects nonconfidential statistics on the project (<span class="caps">CLOC</span>, file types, frameworks used, etc.) and optionally sends it to the <span class="caps">PT</span> server. You can turn off the sending of statistics or take a look at the raw json that contains the collected data via the tool’s About&nbsp;menu.</p>
             </div>
             <!-- /.entry-content -->
