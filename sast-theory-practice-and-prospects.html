@@ -12,7 +12,7 @@
 <link rel="canonical" href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">
 
         <meta name="author" content="Владимир Кочетков" />
-        <meta name="keywords" content="SAST,DAST,IAST,статический анализ кода,анализатор кода,static code analysis,Application Inspector" />
+        <meta name="keywords" content="SAST,DAST,IAST,статический анализ кода,анализатор кода,Application Inspector" />
         <meta name="description" content="Не будет большим преувеличением сказать, что рынок средств статического тестирования защищенности приложений (Static Application Security Testing, SAST) в наше время переживает самый настоящий бум. Не проходит и пары месяцев между публикациями очередных научных работ на эту тему, ежегодно на рынок выводятся все новые и новые инструменты статического анализа защищенности, а месту SAST в процессе разработки ПО отводятся целые секции на международных ИБ-конференциях. В условиях непрерывного информационного прессинга со стороны поставщиков инструментария SAST, нелегко разобраться в том, что есть правда, а что − не более, чем маркетинговые уловки, слабо коррелирующие с действительностью. Давайте попробуем понять, что же действительно под силу инструментам SAST и как быть с тем, что им «не по зубам». Для этого нам придется немного погрузиться в теорию, лежащую в основе современных средств статического анализа защищенности кода." />
 
         <meta property="og:site_name" content="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}" />
@@ -27,7 +27,6 @@
             <meta property="article:tag" content="IAST" />
             <meta property="article:tag" content="статический анализ кода" />
             <meta property="article:tag" content="анализатор кода" />
-            <meta property="article:tag" content="static code analysis" />
             <meta property="article:tag" content="Application Inspector" />
             <meta property="article:author" content="Владимир Кочетков" />
 
@@ -122,8 +121,6 @@
 	<a href="https://kochetkov.github.io/tag/staticheskii-analiz-koda.html">статический анализ кода</a>
         /
 	<a href="https://kochetkov.github.io/tag/analizator-koda.html">анализатор кода</a>
-        /
-	<a href="https://kochetkov.github.io/tag/static-code-analysis.html">static code analysis</a>
         /
 	<a href="https://kochetkov.github.io/tag/application-inspector.html">Application Inspector</a>
     <span class="label label-default">Lang</span>
@@ -378,6 +375,12 @@
 <p>Скачать утилиту можно на <a href="http://approof.ptsecurity.ru/">официальном сайте</a>. Перед ее использованием обязательно ознакомьтесь с лицензионным соглашением. В ходе анализа, Approof собирает неконфиденциальную статистику по проекту (<span class="caps">CLOC</span>, типы файлов, используемые фреймворки и т.к.) и, опционально, отправляет ее на сервер <span class="caps">PT</span>. Отключить отправку статистики или ознакомиться с сырым json, содержащим собранные данные, можно в разделе About&nbsp;приложения.</p>
             </div>
             <!-- /.entry-content -->
+<section class="well" id="related-posts">
+    <h4>Related Posts:</h4>
+    <ul>
+        <li><a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">Мечтают ли <span class="caps">WAF</span>&#8217;ы о&nbsp;статанализаторах</a></li>
+    </ul>
+</section>
     <hr/>
     <section class="comments" id="comments">
         <h2>Комментарии</h2>
@@ -430,6 +433,11 @@
             <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Recent Posts</span></h4>
                 <ul class="list-group" id="recentposts">
                     <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">
+                            Мечтают ли <span class="caps">WAF</span>&#8217;ы о&nbsp;статанализаторах
+                        </a>
+                    </li>
+                    <li class="list-group-item">
                         <a href="https://kochetkov.github.io/webinar-applied-cryptography-pitfalls-1.html">
                             Материалы вебинара &#8220;Подводные камни прикладной криптографии&nbsp;I&#8221;
                         </a>
@@ -449,11 +457,6 @@
                             Семинар Positive Development User&nbsp;Group
                         </a>
                     </li>
-                    <li class="list-group-item">
-                        <a href="https://kochetkov.github.io/blog-movement.html">
-                            Переезд&nbsp;блога
-                        </a>
-                    </li>
                 </ul>
             </li>
 
@@ -466,6 +469,11 @@
                         </a>
                     </li>
                     <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/application-firewall.html">
+                            Application Firewall
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
                         <a href="https://kochetkov.github.io/tag/application-inspector.html">
                             Application Inspector
                         </a>
@@ -510,7 +518,7 @@
                             разработка
                         </a>
                     </li>
-                    <li class="list-group-item tag-4">
+                    <li class="list-group-item tag-1">
                         <a href="https://kochetkov.github.io/tag/sast.html">
                             SAST
                         </a>
@@ -528,6 +536,11 @@
                     <li class="list-group-item tag-1">
                         <a href="https://kochetkov.github.io/tag/vebinary.html">
                             вебинары
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/waf.html">
+                            WAF
                         </a>
                     </li>
                 </ul>
@@ -551,7 +564,7 @@
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2016 Владимир Кочетков
+         <div class="col-xs-10">&copy; 2017 Владимир Кочетков
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>              <p><small>  <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>

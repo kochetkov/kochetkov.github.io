@@ -76,6 +76,13 @@
     <div class="row">
         <div class="col-sm-8">
             <article>
+                <h2><a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">Мечтают ли <span class="caps">WAF</span>&#8217;ы о&nbsp;статанализаторах</a></h2>
+                <div class="summary"><p>Одна из самых популярных тенденций в области защиты приложений нынешнего десятилетия — технология виртуального патчинга (virtual patching, <span class="caps">VP</span>), позволяющая защитить веб-приложение от эксплуатации имеющихся в нем известных уязвимостей на уровне межсетевого экрана уровня веб-приложений (web application firewall; здесь и далее под <span class="caps">WAF</span> подразумевается выделенное решение, функционирующее на отдельном узле, между шлюзом во внешнюю сеть и веб-сервером). Технология <span class="caps">VP</span> основана на построении правил фильтрации <span class="caps">HTTP</span>-запросов на стороне <span class="caps">WAF</span> по результатам работы средств статического анализа защищенности приложения (static application security testing, <span class="caps">SAST</span>). Однако из-за того, что средства <span class="caps">SAST</span> и <span class="caps">WAF</span> опираются на различные модели представления приложения и различные методы принятия решений, на рынке до сих пор нет по-настоящему эффективных решений их интеграции. В рамках <span class="caps">SAST</span> работа с приложением осуществляется по модели белого ящика и, как правило, используются формальные подходы к поиску уязвимостей в коде. Для <span class="caps">WAF</span> же приложение представляет собой черный ящик, а для детектирования атак применяются эвристики. Это не позволяет эффективно использовать <span class="caps">VP</span> для защиты от атак в тех случаях, когда условия эксплуатации уязвимости выходят за рамки тривиальной схемы <code>http_parameter=plain_text_attack_vector</code>. Но что, если «подружить» <span class="caps">SAST</span> и <span class="caps">WAF</span> таким образом, чтобы информация о внутреннем устройстве приложения, полученная с помощью <span class="caps">SAST</span>, стала доступной на стороне <span class="caps">WAF</span> и дала ему возможность детектировать атаки на обнаруженные уязвимости — не угадывая, но доказывая факт&nbsp;атаки?</p>
+                    <a class="btn btn-default btn-xs" href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">далее ...</a>
+                </div>
+            </article>
+            <hr/>
+            <article>
                 <h2><a href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">Ищем уязвимости в коде: теория, практика и перспективы <span class="caps">SAST</span></a></h2>
                 <div class="summary"><p>Не будет большим преувеличением сказать, что рынок средств статического тестирования защищенности приложений (Static Application Security Testing, <span class="caps">SAST</span>) в наше время переживает самый настоящий бум. Не проходит и пары месяцев между публикациями очередных научных работ на эту тему, ежегодно на рынок выводятся все новые и новые инструменты статического анализа защищенности, а месту <span class="caps">SAST</span> в процессе разработки ПО отводятся целые секции на международных ИБ-конференциях. В условиях непрерывного информационного прессинга со стороны поставщиков инструментария <span class="caps">SAST</span>, нелегко разобраться в том, что есть правда, а что − не более, чем маркетинговые уловки, слабо коррелирующие с действительностью. Давайте попробуем понять, что же действительно под силу инструментам <span class="caps">SAST</span> и как быть с тем, что им «не по зубам». Для этого нам придется немного погрузиться в теорию, лежащую в основе современных средств статического анализа защищенности&nbsp;кода.</p>
                     <a class="btn btn-default btn-xs" href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">далее ...</a>
@@ -102,6 +109,11 @@
             <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Recent Posts</span></h4>
                 <ul class="list-group" id="recentposts">
                     <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">
+                            Мечтают ли <span class="caps">WAF</span>&#8217;ы о&nbsp;статанализаторах
+                        </a>
+                    </li>
+                    <li class="list-group-item">
                         <a href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">
                             Ищем уязвимости в коде: теория, практика и перспективы <span class="caps">SAST</span>
                         </a>
@@ -118,6 +130,11 @@
                         </a>
                     </li>
                     <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/application-firewall.html">
+                            Application Firewall
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
                         <a href="https://kochetkov.github.io/tag/application-inspector.html">
                             Application Inspector
                         </a>
@@ -162,7 +179,7 @@
                             разработка
                         </a>
                     </li>
-                    <li class="list-group-item tag-4">
+                    <li class="list-group-item tag-1">
                         <a href="https://kochetkov.github.io/tag/sast.html">
                             SAST
                         </a>
@@ -180,6 +197,11 @@
                     <li class="list-group-item tag-1">
                         <a href="https://kochetkov.github.io/tag/vebinary.html">
                             вебинары
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/waf.html">
+                            WAF
                         </a>
                     </li>
                 </ul>
@@ -203,7 +225,7 @@
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2016 Владимир Кочетков
+         <div class="col-xs-10">&copy; 2017 Владимир Кочетков
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>              <p><small>  <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
