@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Мечтают ли WAF’ы о статанализаторах - &#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers-en.html">
+
+        <meta name="author" content="Владимир Кочетков" />
+        <meta name="keywords" content="SAST,static code analysis,Application Inspector,WAF,Application Firewall" />
+        <meta name="description" content="Virtual patching (VP) has been one of the most popular trends in application protection in recent years. Implemented at the level of a web application firewall, VP allows protecting web applications against exploitation of previously defined vulnerabilities. (For our purposes, a web application firewall, or WAF, will refer to a dedicated solution operating on a separate node between an external gateway and web server.) In short, VP works by taking the results of static application security testing (SAST) and using them to create rules for filtering HTTP requests on the WAF. The problem, though, is that SAST and WAFs rely on different application presentation models and different decision-making methods. As a result, none of the currently available solutions do an adequate job of integrating SAST with WAFs. SAST is based on the white-box model, which applies formal approaches to detect vulnerabilities in code. Meanwhile, a WAF perceives an application as a black box, so it uses heuristics for attack detection. This state of affairs makes VP sub-optimal for preventing attacks when the exploitation conditions for a vulnerability go beyond the trivial http_parameter=plain_text_attack_vector. But what if we could make SAST and a WAF “play nice” with each other? Perhaps we could obtain information about an application’s internal structure via SAST but then make this information available to the WAF. That way we could detect attacks on vulnerabilities in a provable way, instead of by mere guessing." />
+
+        <meta property="og:site_name" content="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Мечтают ли WAF’ы о статанализаторах"/>
+        <meta property="og:url" content="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers-en.html"/>
+        <meta property="og:description" content="Virtual patching (VP) has been one of the most popular trends in application protection in recent years. Implemented at the level of a web application firewall, VP allows protecting web applications against exploitation of previously defined vulnerabilities. (For our purposes, a web application firewall, or WAF, will refer to a dedicated solution operating on a separate node between an external gateway and web server.) In short, VP works by taking the results of static application security testing (SAST) and using them to create rules for filtering HTTP requests on the WAF. The problem, though, is that SAST and WAFs rely on different application presentation models and different decision-making methods. As a result, none of the currently available solutions do an adequate job of integrating SAST with WAFs. SAST is based on the white-box model, which applies formal approaches to detect vulnerabilities in code. Meanwhile, a WAF perceives an application as a black box, so it uses heuristics for attack detection. This state of affairs makes VP sub-optimal for preventing attacks when the exploitation conditions for a vulnerability go beyond the trivial http_parameter=plain_text_attack_vector. But what if we could make SAST and a WAF “play nice” with each other? Perhaps we could obtain information about an application’s internal structure via SAST but then make this information available to the WAF. That way we could detect attacks on vulnerabilities in a provable way, instead of by mere guessing."/>
+        <meta property="article:published_time" content="2020-02-25" />
+            <meta property="article:section" content="Blog" />
+            <meta property="article:tag" content="SAST" />
+            <meta property="article:tag" content="static code analysis" />
+            <meta property="article:tag" content="Application Inspector" />
+            <meta property="article:tag" content="WAF" />
+            <meta property="article:tag" content="Application Firewall" />
+            <meta property="article:author" content="Владимир Кочетков" />
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://kochetkov.github.io/theme/css/bootstrap.kv.min.css" type="text/css"/>
+    <link href="https://kochetkov.github.io/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="https://kochetkov.github.io/theme/css/pygments/monokai.css" rel="stylesheet">
+        <link href="https://kochetkov.github.io/theme/css/typogrify.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://kochetkov.github.io/theme/css/style.css" type="text/css"/>
+
+        <link href="https://kochetkov.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()} ATOM Feed"/>
+
+
+
+        <link href="https://kochetkov.github.io/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate"
+              title="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()} Blog ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="https://kochetkov.github.io/" class="navbar-brand">
+&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()}            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="https://kochetkov.github.io/category/blog.html">Блог</a>
+                        </li>
+                         <li><a href="https://kochetkov.github.io/pages/whoami-and-wastes.html">
+                             whoami &&&nbsp;wastes
+                          </a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="https://kochetkov.github.io/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+<!-- Banner -->
+<!-- End Banner -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-8">
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers-en.html"
+                       rel="bookmark"
+                       title="Permalink to Мечтают ли WAF’ы о статанализаторах">
+                        Мечтают ли <span class="caps">WAF</span>&#8217;ы о&nbsp;статанализаторах
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2020-02-25T14:00:00+03:00"> Вт 25 Февраль 2020</time>
+    </span>
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="https://kochetkov.github.io/tag/sast.html">SAST</a>
+        /
+	<a href="https://kochetkov.github.io/tag/static-code-analysis.html">static code analysis</a>
+        /
+	<a href="https://kochetkov.github.io/tag/application-inspector.html">Application Inspector</a>
+        /
+	<a href="https://kochetkov.github.io/tag/waf.html">WAF</a>
+        /
+	<a href="https://kochetkov.github.io/tag/application-firewall.html">Application Firewall</a>
+    <span class="label label-default">Lang</span>
+	<a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">ru</a>
+
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/title-picture.png"><img alt="Титульная картинка" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/title-picture.png"></a></p>
+<p>Virtual patching (<span class="caps">VP</span>) has been one of the most popular trends in application protection in recent years. Implemented at the level of a web application firewall, <span class="caps">VP</span> allows protecting web applications against exploitation of previously defined vulnerabilities. (For our purposes, a web application firewall, or <span class="caps">WAF</span>, will refer to a dedicated solution operating on a separate node between an external gateway and web&nbsp;server.)</p>
+<p>In short, <span class="caps">VP</span> works by taking the results of static application security testing (<span class="caps">SAST</span>) and using them to create rules for filtering <span class="caps">HTTP</span> requests on the <span class="caps">WAF</span>. The problem, though, is that <span class="caps">SAST</span> and WAFs rely on different application presentation models and different decision-making methods. As a result, none of the currently available solutions do an adequate job of integrating <span class="caps">SAST</span> with WAFs. <span class="caps">SAST</span> is based on the white-box model, which applies formal approaches to detect vulnerabilities in code. Meanwhile, a <span class="caps">WAF</span> perceives an application as a black box, so it uses heuristics for attack detection. This state of affairs makes <span class="caps">VP</span> sub-optimal for preventing attacks when the exploitation conditions for a vulnerability go beyond the trivial <code>http_parameter=plain_text_attack_vector</code>.</p>
+<p>But what if we could make <span class="caps">SAST</span> and a <span class="caps">WAF</span> &#8220;play nice&#8221; with each other? Perhaps we could obtain information about an application&#8217;s internal structure via <span class="caps">SAST</span> but then make this information available to the <span class="caps">WAF</span>. That way we could detect attacks on vulnerabilities in a provable way, instead of by mere&nbsp;guessing.</p>
+<h2>Splendors and miseries of traditional <span class="caps">VP</span></h2>
+<p>The traditional approach to automated virtual patching for web applications involves providing the <span class="caps">WAF</span> with information about each vulnerability that has been detected with <span class="caps">SAST</span>. This information&nbsp;includes:</p>
+<ul>
+<li>vulnerability&nbsp;class;</li>
+<li>vulnerable entry point to the web application (full or partial <span class="caps">URL</span>);</li>
+<li>values of additional <span class="caps">HTTP</span> request parameters necessary for the&nbsp;attack;</li>
+<li>values of the vulnerable parameter constituting the attack&nbsp;vector;</li>
+<li>set of characters or words (tokens) whose presence in a vulnerable parameter will lead to exploitation of the&nbsp;vulnerability.</li>
+</ul>
+<p>The set of <span class="caps">HTTP</span> request parameters and dangerous elements of a vulnerable parameter can be defined both by bruteforcing and by using a generic function (typically based on regular expressions). Let us look at a fragment of code from an <span class="caps">ASP</span>.<span class="caps">NET</span> page that is vulnerable to <a href="https://habrahabr.ru/company/pt/blog/149152/"><span class="caps">XSS</span></a>&nbsp;attacks:</p>
+<div class="highlight"><pre><span></span><code><span class="m">01</span>  <span class="kt">var</span> <span class="n">condition</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;condition&quot;</span><span class="p">];</span>
+<span class="m">02</span>  <span class="kt">var</span> <span class="n">param</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
+<span class="m">03</span>
+<span class="m">04</span>  <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">param</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+<span class="m">05</span>  <span class="p">{</span>
+<span class="m">06</span>      <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="s">&quot;Wrong parameters!&quot;</span><span class="p">);</span>
+<span class="m">07</span>      <span class="k">return</span><span class="p">;</span>
+<span class="m">08</span>  <span class="p">}</span>
+<span class="m">09</span>
+<span class="m">10</span>  <span class="kt">string</span> <span class="n">response</span><span class="p">;</span>
+<span class="m">11</span>  <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="p">==</span> <span class="s">&quot;secret&quot;</span><span class="p">)</span>
+<span class="m">12</span>  <span class="p">{</span>
+<span class="m">13</span>    <span class="n">response</span> <span class="p">=</span> <span class="s">&quot;Parameter value is `&quot;</span> <span class="p">+</span> <span class="n">param</span> <span class="p">+</span> <span class="s">&quot;`&quot;</span><span class="p">;</span>
+<span class="m">14</span>  <span class="p">}</span>
+<span class="m">15</span>  <span class="k">else</span>
+<span class="m">16</span>  <span class="p">{</span>
+<span class="m">17</span>    <span class="n">response</span> <span class="p">=</span> <span class="s">&quot;Secret not found!&quot;</span><span class="p">;</span>
+<span class="m">18</span>  <span class="p">}</span>
+<span class="m">19</span>
+<span class="m">20</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span> <span class="p">+</span> <span class="n">response</span> <span class="p">+</span> <span class="s">&quot;&lt;/b&gt;&quot;</span><span class="p">);&lt;/</span><span class="n">source</span><span class="p">&gt;</span>
+</code></pre></div>
+
+
+<p>By analyzing this attack vector code, we can generate a symbolic formula for the set of attack vector&nbsp;values: </p>
+<p><code>{condition = "secret" ⇒ param ∈ { XSShtml-text }}</code>, where XSShtml-text is the set of possible vectors of an <span class="caps">XSS</span> attack in the context of <span class="caps">TEXT</span>, as described in the <span class="caps">HTML</span>&nbsp;grammar.</p>
+<p>This formula may yield both an exploit and a virtual patch. The descriptor of the <span class="caps">WAF</span> virtual patch can be used to generate filtering rules to block all <span class="caps">HTTP</span> requests capable of exploiting the relevant&nbsp;vulnerability.</p>
+<p>Although this approach surely heads off certain attacks, it has some substantial&nbsp;drawbacks:</p>
+<ul>
+<li>to demonstrate any given vulnerability, <span class="caps">SAST</span> needs to discover just one of the possible attack vectors. But to ensure true elimination of a vulnerability, it is necessary to address all possible attack vectors. Passing such information to the <span class="caps">WAF</span> is difficult, because the set of vectors is not only infinite but cannot even be expressed in regular expressions due to the irregularity of attack vector&nbsp;grammars;</li>
+<li>the same is true for values of all additional request parameters that are necessary for vulnerability&nbsp;exploitation;</li>
+<li>information regarding dangerous elements of a vulnerable parameter becomes useless if an attack vector, between the entry point and vulnerable execution point, undergoes intermediate transformations that change the context of its grammar or even its entire grammar (such as with Base64, <span class="caps">URL</span>, or <span class="caps">HTML</span> encoding, or string&nbsp;transformations).</li>
+</ul>
+<p>Due to these flaws, <span class="caps">VP</span> technology—which is designed for piecemeal protection—is incapable of offering protection against all possible attacks on <span class="caps">SAST</span>-detected vulnerabilities. Attempts to create such &#8220;all-encompassing&#8221; traffic filtering rules often lead to blocking of legitimate <span class="caps">HTTP</span> requests and disrupt operation of the web application. Let us slightly modify the vulnerable&nbsp;code:</p>
+<div class="highlight"><pre><span></span><code><span class="m">01</span>  <span class="kt">var</span> <span class="n">condition</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;condition&quot;</span><span class="p">];</span>
+<span class="m">02</span>  <span class="kt">var</span> <span class="n">param</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
+<span class="m">03</span> 
+<span class="m">04</span>  <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">param</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+<span class="m">05</span>  <span class="p">{</span>
+<span class="m">06</span>      <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="s">&quot;Wrong parameters!&quot;</span><span class="p">);</span>
+<span class="m">07</span>      <span class="k">return</span><span class="p">;</span>
+<span class="m">08</span>  <span class="p">}</span>
+<span class="m">09</span> 
+<span class="m">10</span>  <span class="kt">string</span> <span class="n">response</span><span class="p">;</span>
+<span class="m">11</span>  <span class="c1">// CustomDecode implements chain data transformation base64-URL-base64</span>
+<span class="m">12</span>  <span class="k">if</span> <span class="p">(</span><span class="n">CustomDecode</span><span class="p">(</span><span class="n">condition</span><span class="p">).</span><span class="n">Contains</span><span class="p">(</span><span class="s">&quot;secret&quot;</span><span class="p">))</span>
+<span class="m">13</span>  <span class="p">{</span>
+<span class="m">14</span>      <span class="n">response</span> <span class="p">=</span> <span class="s">&quot;Parameter value is `&quot;</span> <span class="p">+</span> <span class="n">CustomDecode</span><span class="p">(</span><span class="n">param</span><span class="p">)</span> <span class="p">+</span> <span class="s">&quot;`&quot;</span><span class="p">;</span>
+<span class="m">15</span>  <span class="p">}</span>
+<span class="m">16</span>  <span class="k">else</span>
+<span class="m">17</span>  <span class="p">{</span>
+<span class="m">18</span>       <span class="n">response</span> <span class="p">=</span> <span class="s">&quot;Secret not found!&quot;</span><span class="p">;</span>
+<span class="m">19</span>  <span class="p">}</span>
+<span class="m">20</span> 
+<span class="m">21</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+</code></pre></div>
+
+
+<p>The only difference from the previous example is that both request parameters now undergo a transformation and the condition for the <code>secret</code> parameter is weakened until the sub-string is included back in. The attack vector formula, based on analysis of this new code, is as&nbsp;follows: </p>
+<p><code>(String.Contains (CustomDecode (condition)) ("secret"))  ⇒ param ∈ (CustomDecode { XSShtml-text })</code></p>
+<p>The analyzer will derive a formula at the relevant computation flow graph (CompFG) node for the CustomDecode function to describe the Base64—<span class="caps">URL</span>—Base64 transformation&nbsp;chain: </p>
+<p><code>(Base64Decode (UrlDecode (Base64Decode argument)))</code></p>
+<p>It is still possible to build an exploit on the basis of such formulas (we have considered this issue in a previous <a href="https://kochetkov.github.io/sast-theory-practice-and-prospects-en.html">article</a>), but the classical approach to generating virtual patches cannot be applied here for the following&nbsp;reasons:</p>
+<ul>
+<li>the vulnerability may be exploited only if the decoded <code>condition</code> parameter of the request contains the &#8220;secret&#8221; substring (String 12). However, this parameter&#8217;s set of values is quite large and expressing this set via regular expressions is infeasible due to the irregularity of decoding&nbsp;functions;</li>
+<li>request parameter that is, in fact, an attack vector also is decoded (String 14). Therefore, <span class="caps">SAST</span> cannot describe that set of dangerous elements to the <span class="caps">WAF</span>.</li>
+</ul>
+<p>Since all the problems of traditional <span class="caps">VP</span> stem from the inability to interact with an application at the <span class="caps">WAF</span> level based on the white-box approach, the obvious solution is to implement this capability and make further improvements so&nbsp;that:</p>
+<ul>
+<li><span class="caps">SAST</span> provides the <span class="caps">WAF</span> with full information about all transformations to which a vulnerable parameter and variables of attack conditions are subjected, from entry point to vulnerable execution point. This enables the <span class="caps">WAF</span> to compute argument values based on the values of the parameters of a given <span class="caps">HTTP</span>&nbsp;request;</li>
+<li>for attack detection, heuristics are replaced with formal methods that are based on rigorous proof of all statements and describe the exploitation conditions for any particular vulnerability in the most general case, instead of haphazardly describing a limited number of&nbsp;cases.</li>
+</ul>
+<p>Thus was born runtime virtual&nbsp;patching.</p>
+<h2>Runtime virtual&nbsp;patching</h2>
+<p>Runtime virtual patching (<span class="caps">RVP</span>) is based on the computation flow graph model used in <span class="caps">PT</span> Application Inspector (<span class="caps">PT</span> <span class="caps">AI</span>). The model is built using abstract interpretation of an application&#8217;s code, expressed in semantics similar to conventional symbolic computations. Nodes of this graph contain generating formulas in the target language. The formulas yield the set of all allowable values associated with all data flows at the relevant execution&nbsp;points:</p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/compfg-example.png"><img alt="CompFG example" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/compfg-example.png"></a></p>
+<p>These flows are called execution point arguments. CompFG is evaluable, and thus able to compute sets of specific values for all arguments at any execution point, based on the values that have been set for input&nbsp;parameters.</p>
+<p><span class="caps">RVP</span> occurs in two stages, which correspond to the application lifecycle: Deployment (D) and Run&nbsp;(R):</p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/rvp-workflow.png"><img alt="RVP workflow" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/rvp-workflow.png"></a></p>
+<h3>Deployment&nbsp;stage</h3>
+<p>Before a new version of an application is deployed, the application is analyzed by <span class="caps">PT</span> <span class="caps">AI</span>. Three formulas are computed for each CompFG node that describes a vulnerable execution&nbsp;point:</p>
+<ul>
+<li>conditions for reaching the vulnerable execution&nbsp;point;</li>
+<li>conditions for reaching values of all its&nbsp;arguments;</li>
+<li>sets of values of all arguments and corresponding&nbsp;grammars.</li>
+</ul>
+<p>All formula sets are grouped by the application entry point to whose control flow the vulnerability relates. The very notion of entry point is specific to each web framework supported by <span class="caps">PT</span> <span class="caps">AI</span> and is defined in the analyzer&#8217;s&nbsp;database.</p>
+<p>Then a report containing the list of vulnerabilities and related formulas is extracted in the form of code written in a special language based on S-expression syntax. This language describes CompFG formulas in a form that does not depend on the target language. For instance, the formula describing the value of an argument for the vulnerable point in the above code sample is as&nbsp;follows:</p>
+<p><code>(+ ("Parameter value is ``") (FromBase64Str (UrlDecodeStr (FromBase64Str (GetParameterData (param))))) ("``"))</code></p>
+<p>The formula for reaching the vulnerable point&nbsp;is:</p>
+<p><code>(Contains (FromBase64Str (UrlDecodeStr (FromBase64Str (GetParameterData (condition))))) ("secret"))</code></p>
+<p>The report is then uploaded to <span class="caps">PT</span> Application Firewall (<span class="caps">PT</span> <span class="caps">AF</span>). On the basis of the report, a binary module is generated, which can compute all the formulas contained in the report. For example, the decompiled code for computing the condition for reaching the above-mentioned vulnerable point is as&nbsp;follows: </p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/evaluator-example.png"><img alt="Evaluator example" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/evaluator-example.png"></a></p>
+<p>To make formula computation possible, <span class="caps">PT</span> <span class="caps">AF</span> must have one of the&nbsp;following:</p>
+<ul>
+<li>pre-compute database of all functions that may occur in the&nbsp;report;</li>
+<li>an isolated sandbox with runtime environment for the language or platform on which the web application runs (such as <span class="caps">CLR</span>, <span class="caps">JVM</span>, or <span class="caps">PHP</span>, Python, or Ruby interpreter), and libraries used in the&nbsp;application.</li>
+</ul>
+<p>The first method ensures maximum speed but requires a huge volume of manual work by the <span class="caps">WAF</span> developers to describe the pre-compute database even if the developers restrict the scope to standard library functions). The second method allows computing all the functions that may occur in the report, but increases the time needed to process each <span class="caps">HTTP</span> request, because the <span class="caps">WAF</span> needs to access the runtime environment to compute each function. The most appropriate solution here would be to use the first approach for the most common functions while using the second approach for the&nbsp;rest.</p>
+<p>It is quite possible for a formula to contain a function that the analyzer cannot process (for instance, calling a method that involves a missing project dependency or native code) and/or a function that <span class="caps">PT</span> <span class="caps">AF</span> is unable to compute (for instance, a function for reading data from external sources or the server environment). Such functions are flagged &#8220;unknown&#8221; in formulas and processed in a special way as described&nbsp;below.</p>
+<h3>Run&nbsp;stage</h3>
+<p>At the run stage, the <span class="caps">WAF</span> delegates processing of each <span class="caps">HTTP</span> request to the binary module. The module analyzes a request and detects the relevant entry point in the web application. For this point, formulas of all detected vulnerabilities are selected and then computed in a specific&nbsp;way.</p>
+<p>First, formulas are computed for both conditions: 1) reaching the vulnerable point and 2) reaching values of all its arguments. In each formula, variables are substituted with values of the relevant request parameters, after which the formula value is computed. If a formula contains expressions that are flagged &#8220;unknown&#8221;, it is processed as&nbsp;follows:</p>
+<ul>
+<li>each &#8220;unknown&#8221; flag spreads bottom-up through the formula expression tree until a Boolean expression is&nbsp;found;</li>
+<li>in the formula, such expressions (&#8220;unknown&#8221; regions) are substituted with Boolean variables, so the Boolean satisfiability problem is&nbsp;solved;</li>
+<li>the assumption formula generates n conditions by substituting possible values of unknown regions from all the solutions found in the previous&nbsp;step;</li>
+<li>the value of each formula is computed. If at least one formula is satisfiable, the assumption is deemed satisfiable as&nbsp;well.</li>
+</ul>
+<p>If computations show that the assumption is false, then the <span class="caps">HTTP</span> request in question cannot lead the application to a vulnerable point even with dangerous values of all request arguments. In this case, <span class="caps">RVP</span> simply returns request processing to the <span class="caps">WAF</span>&#8217;s core&nbsp;module.</p>
+<p>If attack conditions are satisfiable, the value of the argument of the vulnerable point is then computed. Algorithms used depend on the vulnerability class to which the analyzed point belongs. Their only similarity is the logic used to process formulas that contain unknown nodes: unlike assumption formulas, argument formulas cannot possibly be computed, which is immediately communicated to the <span class="caps">WAF</span>. Then the next vulnerable point is computed. To better flesh this out, we shall now review the most complicated algorithm, which is used for detecting injection&nbsp;attacks.</p>
+<h3>Detecting&nbsp;injections</h3>
+<p>Injections include any attacks that target the integrity of text written in a formal language (including <span class="caps">HTML</span>, <span class="caps">XML</span>, JavaScript, <span class="caps">SQL</span>, URLs, and file paths) on the basis of data controlled by the attacker. The attack is carried out by passing specifically formed input data to the application. When this data is &#8220;plugged in&#8221; to the target text, the boundaries of the token are exceeded and the text now includes syntactic constructions not intended by the application&nbsp;logic.</p>
+<p>If a vulnerable point belongs to this attack class, its argument value is determined using incremental computation with abstract interpretation using taint analysis semantics. The idea behind this method is that each expression is computed separately, from bottom to top, while the computation results obtained at each step are additionally marked with taint intervals, given the semantics of each function and rules of traditional <a href="https://en.wikipedia.org/wiki/Taint_checking">taint checking</a>. This makes it possible to pinpoint all fragments that are the result of transformation of input data (tainted&nbsp;fragments).</p>
+<p>For instance, for the code above and the following <span class="caps">HTTP</span> request parameter <code>?condition=YzJWamNtVjA%3d&amp;param=UEhOamNtbHdkRDVoYkdWeWRDZ3hLVHd2YzJOeWFYQjBQZyUzRCUzRA%3d%3d</code>, the result of applying this algorithm to the formula of a vulnerable point argument is as follows (tainted arguments are marked in&nbsp;red):</p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/incremental-evaluation-exampe.png"><img alt="Incremental evaluation example" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/incremental-evaluation-exampe.png"></a></p>
+<p>The value is then tokenized in accordance with the grammar of the vulnerable point argument. If any tainted fragment matches more than one token, this is a formal sign of an injection attack (based on the definition of injection given at the beginning of this&nbsp;section).</p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/tokenization-example.png"><img alt="Tokenization example" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/tokenization-example.png"></a></p>
+<p>Once formulas have been computed for all vulnerabilities pertaining to the current entry point, request processing is passed on to the <span class="caps">WAF</span>&#8217;s core module together with detection&nbsp;results.</p>
+<h3><span class="caps">RVP</span> advantages and specific&nbsp;features</h3>
+<p>This approach to application protection based on code analysis has a range of substantial advantages as compared to traditional <span class="caps">VP</span>:</p>
+<ul>
+<li>the shortcomings of traditional <span class="caps">VP</span> are addressed, thanks to the formal approach described above and the ability to take into account any and all intermediate&nbsp;transformations;</li>
+<li>the formal approach also completely rules out the possibility of false positives, so long as the formulas do not contain unknown&nbsp;nodes;</li>
+<li>there is no adverse impact on web application functionality, because protection is built on the functions of the application, as opposed to simply trying to work around&nbsp;them. </li>
+</ul>
+<p>For testing the technology and confirming its effectiveness, we have developed a prototype of an integration module for <span class="caps">PT</span> Application Inspector and <span class="caps">PT</span> Application Firewall, in the form of a .<span class="caps">NET</span> <span class="caps">HTTP</span> module for <span class="caps">IIS</span> web server. A video of the prototype handling the code example above is on <a href="https://www.youtube.com/watch?v=U1NbKuZkb8c">YouTube</a>. Performance tests on around fifteen open-source content management systems (CMSs) have shown great results: the time required for processing <span class="caps">HTTP</span> requests with <span class="caps">RVP</span> is comparable to the time that it takes to process such requests with traditional (heuristic) <span class="caps">WAF</span> methods. The average performance hit for web applications was as&nbsp;follows:</p>
+<ul>
+<li>0% for requests that do not lead to a vulnerable&nbsp;point;</li>
+<li>6–10% for requests that lead to a vulnerable point and are not an attack (depending on complexity of the grammar of the vulnerable&nbsp;point);</li>
+<li>4–7% for requests that lead to a vulnerable point and are an&nbsp;attack.</li>
+</ul>
+<p>Despite obvious advantages over traditional <span class="caps">VP</span>, <span class="caps">RVP</span> still has several conceptual&nbsp;shortcomings:</p>
+<ul>
+<li>it is not possible to compute formulas that contain data from external sources absent on the <span class="caps">WAF</span> (including file resources, databases, and server&nbsp;environment);</li>
+<li>the quality of formulas directly depends on the quality of approximation of code fragments during analysis (including loops, recursion, and calls to external library&nbsp;methods);</li>
+<li>to describe semantics of transformation functions for the pre-compute database, some engineering work from the developers is required. The description process is difficult to automate and is prone to human&nbsp;error. </li>
+</ul>
+<p>However, we have managed to mitigate these weaknesses by offloading some <span class="caps">RVP</span> functions to the application and by applying the technologies that underlie runtime application self-protection (<span class="caps">RASP</span>).</p>
+<h2>Advanced <span class="caps">RASP</span></h2>
+<p>In essence, the <span class="caps">ARASP</span> approach consists of using the application itself to compute the formula fragments that cannot be computed by the <span class="caps">RVP</span>. An additional instrumentation module is deployed on the application side in order to integrate detector sensors into the web application. These sensors allow getting the values of any fragments of the formulas computed by the <span class="caps">RVP</span>.</p>
+<p>The <span class="caps">ARASP</span> workflow is effectively an extension of the <span class="caps">RVP</span>&#8217;s one, and is different from it in the following&nbsp;ways:</p>
+<ul>
+<li>In the report exported from <span class="caps">PT</span> <span class="caps">AI</span>, each expression in a formula is supplemented by additional attribute: its coordinates in the&nbsp;code:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">+</span> <span class="p">(</span><span class="s">&quot;Parameter value is `&quot;</span><span class="p">)</span>  
+  <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">36</span><span class="p">:</span><span class="m">7</span><span class="p">:</span><span class="n">FromBase64Str</span>   
+    <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">35</span><span class="p">:</span><span class="m">13</span><span class="p">:</span><span class="n">UrlDecodeStr</span> 
+      <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">32</span><span class="p">:</span><span class="m">11</span><span class="p">:</span><span class="n">FromBase64Str</span>   
+        <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">31</span><span class="p">:</span><span class="m">10</span><span class="p">:</span><span class="n">GetParameterData</span>
+          <span class="p">(</span><span class="s">&quot;param&quot;</span><span class="p">)))))</span>
+</code></pre></div>
+
+
+<ul>
+<li>The report is used to generate not only a formula computation module, but also an instrumentation module that runs on the application side. This module embeds detector sensors at all execution points in the application that correspond uncertain expressions in the report. The module also inserts breakpoints that hand off control to the <span class="caps">RVP</span> before proceeding to the vulnerable execution&nbsp;point:</li>
+</ul>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/instrumented-code.png"><img alt="Instrumented code" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/instrumented-code.png"></a></p>
+<ul>
+<li><span class="caps">RVP</span> does not take control when processing an <span class="caps">HTTP</span> request, instead allowing the application to process the request up until the breakpoint that precedes the vulnerable execution point (when this point is reached, the <span class="caps">RVP</span> already has collected information from all of the detector sensors that have been triggered up to that&nbsp;point).</li>
+<li>When the breakpoint is reached, processing of the <span class="caps">HTTP</span> request is handed over to the <span class="caps">RVP</span> and formulas are computed in a way equivalent to the description in the previous section, with one important difference: if the formula contains an uncertain expression, or an expression that cannot be computed by the <span class="caps">RVP</span> (because of references to external data sources or the absence of a necessary transformation function in the knowledge base), then the value of the expression is taken from the pool of information that has been accumulated in the application as of when detector sensors were&nbsp;triggered.</li>
+<li>If an attack is detected, processing of the request is stopped (and therefore the application does not reach the vulnerable execution&nbsp;point).</li>
+<li>If no attack is detected, processing of the request is returned to the application until the next breakpoint is reached or until processing of the request is&nbsp;completed.</li>
+</ul>
+<p>This approach significantly expands upon the abilities of <span class="caps">RVP</span>, eliminating the drawbacks of <span class="caps">RVP</span> as regards the quality of application&nbsp;protection.</p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/arasp-workflow.png"><img alt="ARASP workflow" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/arasp-workflow.png"></a></p>
+<h3>Advantages of <span class="caps">ARASP</span>: More than just virtual&nbsp;patching</h3>
+<p><span class="caps">PT</span> <span class="caps">AI</span> can be configured to export formulas for all potentially vulnerable execution points, without detecting vulnerabilities in them, thereby assuring full coverage of all dangerous fragments of application code. This is what in fact makes <span class="caps">ARASP</span> a comprehensive solution for application protection. This next-generation <span class="caps">WAF</span> takes a white-box approach to the application and uses formal detection methods instead of heuristic ones. Compared to the traditional <span class="caps">RASP</span> approach, this solution has several advantages:
+* negligible performance penalty. Processing of a request by application fragments occurs in parallel with processing of the same request by the <span class="caps">WAF</span> module running <span class="caps">ARASP</span>:
+* minimal hit to application stability. Instrumentation is used only for those execution points that are truly needed for computing formulas;
+* precise (close to 100%) detection of attacks, thanks to use of CompFG model elements and formal methods for operating on these&nbsp;elements.</p>
+<p>That it <span class="caps">RVP</span> and <span class="caps">ARASP</span> represent the most promising way forward in application protection, and will continue to develop them as the main vector for improving integration between <span class="caps">PT</span> Application Inspector and <span class="caps">PT</span> Application&nbsp;Firewall.</p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Комментарии</h2>
+
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'kochetkov'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'do-wafs-dream-of-static-analyzers';
+                var disqus_url = 'https://kochetkov.github.io/do-wafs-dream-of-static-analyzers-en.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-4" id="sidebar">
+            <aside>
+
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+
+
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Recent Posts</span></h4>
+                <ul class="list-group" id="recentposts">
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers.html">
+                            Мечтают ли <span class="caps">WAF</span>&#8217;ы о&nbsp;статанализаторах
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/webinar-applied-cryptography-pitfalls-1.html">
+                            Материалы вебинара &#8220;Подводные камни прикладной криптографии&nbsp;I&#8221;
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/sast-theory-practice-and-prospects.html">
+                            Ищем уязвимости в коде: теория, практика и перспективы <span class="caps">SAST</span>
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/following-the-tracks-of-phdays-6.html">
+                            По следам PHDays <span class="caps">VI</span>
+                        </a>
+                    </li>
+                    <li class="list-group-item">
+                        <a href="https://kochetkov.github.io/phdays6-positive-development-user-group-workshop.html">
+                            Семинар Positive Development User&nbsp;Group
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+            <li class="list-group-item"><a href="https://kochetkov.github.io/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/analizator-koda.html">
+                            анализатор кода
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/application-firewall.html">
+                            Application Firewall
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/application-inspector.html">
+                            Application Inspector
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/appsec.html">
+                            appsec
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/blog.html">
+                            блог
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/dast.html">
+                            DAST
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/iast.html">
+                            IAST
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/kriptografiia.html">
+                            криптография
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/meropriiatiia.html">
+                            мероприятия
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/phdays.html">
+                            phdays
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/razrabotka.html">
+                            разработка
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/sast.html">
+                            SAST
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/static-code-analysis.html">
+                            static code analysis
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/staticheskii-analiz-koda.html">
+                            статический анализ кода
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-1">
+                        <a href="https://kochetkov.github.io/tag/vebinary.html">
+                            вебинары
+                        </a>
+                    </li>
+                    <li class="list-group-item tag-4">
+                        <a href="https://kochetkov.github.io/tag/waf.html">
+                            WAF
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+
+
+    <li class="list-group-item"><h4><i class="fa fa-github fa-lg"></i><span class="icon-label">GitHub Repos</span></h4>
+        <div id="gh_repos">
+            <p class="list-group-item">Status updating...</p>
+        </div>
+            <a href="https://github.com/kochetkov">@kochetkov</a> on GitHub
+    </li>
+    </ul>
+</section>
+            </aside>
+        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Владимир Кочетков
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>              <p><small>  <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="//i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+    Содержимое сайа
+  распространяется на условиях <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>, если явно не оговорено иное. Все материалы отражают частную точку зрения их автора и не могут рассматриваться в качестве официальной позиции каких-либо организаций и сообществ.
+</small></p>
+         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer><script src="https://kochetkov.github.io/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="https://kochetkov.github.io/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="https://kochetkov.github.io/theme/js/respond.min.js"></script>
+
+    <!-- GitHub JS -->
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (!window.jXHR) {
+                var jxhr = document.createElement('script');
+                jxhr.type = 'text/javascript';
+                jxhr.src = 'https://kochetkov.github.io/theme/js/jXHR.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(jxhr, s);
+            }
+
+            github.showRepos({
+                user: 'kochetkov',
+                count: 5,
+                skip_forks: false,
+                target: '#gh_repos'
+            });
+        });
+    </script>
+    <script src="https://kochetkov.github.io/theme/js/github.js" type="text/javascript"></script>
+    <!-- End GitHub JS Code -->
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'kochetkov'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
+    <!-- Google Analytics Universal -->
+    <script type="text/javascript">
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-71486437-1', '');
+        ga('send', 'pageview');
+    </script>
+    <!-- End Google Analytics Universal Code -->
+
+</body>
+</html>
