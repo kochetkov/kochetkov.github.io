@@ -29,10 +29,6 @@
             <meta property="article:tag" content="Application Firewall" />
             <meta property="article:author" content="Владимир Кочетков" />
 
-    <meta name="twitter:card" content="summary">
-        <meta name="twitter:site" content="@kochetkov_v">
-        <meta name="twitter:creator" content="@kochetkov_v">
-    <meta name="twitter:domain" content="https://kochetkov.github.io">
 
     <!-- Bootstrap -->
         <link rel="stylesheet" href="https://kochetkov.github.io/theme/css/bootstrap.kv.min.css" type="text/css"/>
@@ -47,7 +43,7 @@
 
 
 
-        <link href="https://kochetkov.github.io/feeds/blog.atom.xml" type="application/atom+xml" rel="alternate"
+        <link href="https://kochetkov.github.io/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate"
               title="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()} Блог ATOM Feed"/>
 
 </head>
@@ -120,10 +116,13 @@
 	<a href="https://kochetkov.github.io/tag/waf.html">WAF</a>
         /
 	<a href="https://kochetkov.github.io/tag/application-firewall.html">Application Firewall</a>
-    
+    <span class="label label-default">Lang</span>
+	<a href="https://kochetkov.github.io/do-wafs-dream-of-static-analyzers-en.html">en</a>
+
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <p>Одна из самых популярных тенденций в области защиты приложений нынешнего десятилетия — технология виртуального патчинга (virtual patching, <span class="caps">VP</span>), позволяющая защитить веб-приложение от эксплуатации имеющихся в нем известных уязвимостей на уровне межсетевого экрана уровня веб-приложений (web application firewall; здесь и далее под <span class="caps">WAF</span> подразумевается выделенное решение, функционирующее на отдельном узле, между шлюзом во внешнюю сеть и веб-сервером). Технология <span class="caps">VP</span> основана на построении правил фильтрации <span class="caps">HTTP</span>-запросов на стороне <span class="caps">WAF</span> по результатам работы средств статического анализа защищенности приложения (static application security testing, <span class="caps">SAST</span>). Однако из-за того, что средства <span class="caps">SAST</span> и <span class="caps">WAF</span> опираются на различные модели представления приложения и различные методы принятия решений, на рынке до сих пор нет по-настоящему эффективных решений их интеграции. В рамках <span class="caps">SAST</span> работа с приложением осуществляется по модели белого ящика и, как правило, используются формальные подходы к поиску уязвимостей в коде. Для <span class="caps">WAF</span> же приложение представляет собой черный ящик, а для детектирования атак применяются эвристики. Это не позволяет эффективно использовать <span class="caps">VP</span> для защиты от атак в тех случаях, когда условия эксплуатации уязвимости выходят за рамки тривиальной схемы <code>http_parameter=plain_text_attack_vector</code>.</p>
+                <p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/title-picture.png"><img alt="Титульная картинка" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/title-picture.png"></a></p>
+<p>Одна из самых популярных тенденций в области защиты приложений нынешнего десятилетия — технология виртуального патчинга (virtual patching, <span class="caps">VP</span>), позволяющая защитить веб-приложение от эксплуатации имеющихся в нем известных уязвимостей на уровне межсетевого экрана уровня веб-приложений (web application firewall; здесь и далее под <span class="caps">WAF</span> подразумевается выделенное решение, функционирующее на отдельном узле, между шлюзом во внешнюю сеть и веб-сервером). Технология <span class="caps">VP</span> основана на построении правил фильтрации <span class="caps">HTTP</span>-запросов на стороне <span class="caps">WAF</span> по результатам работы средств статического анализа защищенности приложения (static application security testing, <span class="caps">SAST</span>). Однако из-за того, что средства <span class="caps">SAST</span> и <span class="caps">WAF</span> опираются на различные модели представления приложения и различные методы принятия решений, на рынке до сих пор нет по-настоящему эффективных решений их интеграции. В рамках <span class="caps">SAST</span> работа с приложением осуществляется по модели белого ящика и, как правило, используются формальные подходы к поиску уязвимостей в коде. Для <span class="caps">WAF</span> же приложение представляет собой черный ящик, а для детектирования атак применяются эвристики. Это не позволяет эффективно использовать <span class="caps">VP</span> для защиты от атак в тех случаях, когда условия эксплуатации уязвимости выходят за рамки тривиальной схемы <code>http_parameter=plain_text_attack_vector</code>.</p>
 <p>Но что, если «подружить» <span class="caps">SAST</span> и <span class="caps">WAF</span> таким образом, чтобы информация о внутреннем устройстве приложения, полученная с помощью <span class="caps">SAST</span>, стала доступной на стороне <span class="caps">WAF</span> и дала ему возможность детектировать атаки на обнаруженные уязвимости — не угадывая, но доказывая факт&nbsp;атаки?</p>
 <h2>Блеск и нищета традиционного <span class="caps">VP</span></h2>
 <p>Традиционный подход к автоматизации создания виртуальных патчей для веб-приложений заключается в предоставлении <span class="caps">WAF</span> информации о каждой обнаруженной с помощью <span class="caps">SAST</span> уязвимости,&nbsp;включающей:</p>
@@ -135,7 +134,7 @@
 <li>множество символов или слов (токенов), появление которых в уязвимом параметре приведет к эксплуатации&nbsp;уязвимости.</li>
 </ul>
 <p>Для определения множеств значений параметров <span class="caps">HTTP</span>-запроса и опасных элементов уязвимого параметра могут использоваться как простое перечисление всех возможных элементов, так и генерирующая функция (как правило, на базе регулярных выражений). Рассмотрим фрагмент кода <span class="caps">ASP</span>.<span class="caps">NET</span>-страницы, уязвимый для атак <a href="https://habrahabr.ru/company/pt/blog/149152/"><span class="caps">XSS</span></a>:</p>
-<div class="highlight"><pre><span></span><span class="m">01</span>  <span class="kt">var</span> <span class="n">condition</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;condition&quot;</span><span class="p">];</span>
+<div class="highlight"><pre><span></span><code><span class="m">01</span>  <span class="kt">var</span> <span class="n">condition</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;condition&quot;</span><span class="p">];</span>
 <span class="m">02</span>  <span class="kt">var</span> <span class="n">param</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
 <span class="m">03</span>
 <span class="m">04</span>  <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">param</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
@@ -155,7 +154,7 @@
 <span class="m">18</span>  <span class="p">}</span>
 <span class="m">19</span>
 <span class="m">20</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span> <span class="p">+</span> <span class="n">response</span> <span class="p">+</span> <span class="s">&quot;&lt;/b&gt;&quot;</span><span class="p">);&lt;/</span><span class="n">source</span><span class="p">&gt;</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>В результате анализа этого кода для вектора атаки будет выведена символическая формула условного множества его&nbsp;значений: </p>
@@ -168,7 +167,7 @@
 <li>информация об опасных элементах уязвимого параметра бесполезна в том случае, если на пути от точки входа до уязвимой точки выполнения вектор атаки подвергается промежуточным преобразованиям, изменяющим контекст его грамматики или даже всю грамматику (например, Base64-, <span class="caps">URL</span>- или <span class="caps">HTML</span>-кодирование, строковые&nbsp;преобразования).</li>
 </ul>
 <p>Эти недостатки приводят к тому, что технология <span class="caps">VP</span>, ориентированная на защиту от частных случаев, не позволяет эффективно защититься от всех возможных атак на обнаруженные с помощью средств <span class="caps">SAST</span> уязвимости. Кроме того, построенные таким образом правила фильтрации трафика часто приводят к блокированию штатных <span class="caps">HTTP</span>-запросов и нарушению работы защищаемого приложения. Немного изменим уязвимый&nbsp;код:</p>
-<div class="highlight"><pre><span></span><span class="m">01</span>  <span class="kt">var</span> <span class="n">condition</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;condition&quot;</span><span class="p">];</span>
+<div class="highlight"><pre><span></span><code><span class="m">01</span>  <span class="kt">var</span> <span class="n">condition</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;condition&quot;</span><span class="p">];</span>
 <span class="m">02</span>  <span class="kt">var</span> <span class="n">param</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
 <span class="m">03</span> 
 <span class="m">04</span>  <span class="k">if</span> <span class="p">(</span><span class="n">condition</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">param</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
@@ -189,7 +188,7 @@
 <span class="m">19</span>  <span class="p">}</span>
 <span class="m">20</span> 
 <span class="m">21</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Разница с предыдущим примером лишь в том, что теперь оба параметра запроса подвергаются некоторому преобразованию и условие на параметр <code>secret</code> ослаблено до включения подстроки. Формула вектора атаки в результате анализа этого кода примет&nbsp;вид: </p>
@@ -273,7 +272,55 @@
 <li>описание семантики преобразующих функций для базы вычислителей требует некоторого количества инженерной работы, которая слабо автоматизируется и допускает появление ошибок, связанных с человеческим&nbsp;фактором.</li>
 </ul>
 <p>Впрочем, и эти недостатки оказалось возможным устранить, перенеся часть функциональности <span class="caps">RVP</span> на сторону приложения и применив технологии, лежащие в основе самозащиты приложений времени выполнения (runtime application self-protection, <span class="caps">RASP</span>).</p>
-<p>Но об этом — уже во второй части статьи&nbsp;:)</p>
+<h2>Advanced <span class="caps">RASP</span></h2>
+<p>По сути, подход <span class="caps">ARASP</span> подразумевает применение самого приложения для вычисления тех фрагментов формулы, которые невозможно вычислить при помощи <span class="caps">RVP</span>. Для интеграции в веб-приложение сенсоров детектирования, при помощи которых можно получить значения любых фрагментов формул, вычисляемых <span class="caps">RVP</span>, на стороне приложения используется дополнительный модуль&nbsp;инструментирования.</p>
+<p>Процесс <span class="caps">ARASP</span> представляет собой рассмотренный выше процесс <span class="caps">RVP</span> со следующими&nbsp;дополнениями:</p>
+<ul>
+<li>В выгруженном из <span class="caps">PT</span> <span class="caps">AI</span> отчете каждое выражение в формуле имеет дополнительный атрибут — его координаты в&nbsp;коде:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="p">+</span> <span class="p">(</span><span class="s">&quot;Parameter value is `&quot;</span><span class="p">)</span>  
+  <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">36</span><span class="p">:</span><span class="m">7</span><span class="p">:</span><span class="n">FromBase64Str</span>   
+    <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">35</span><span class="p">:</span><span class="m">13</span><span class="p">:</span><span class="n">UrlDecodeStr</span> 
+      <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">32</span><span class="p">:</span><span class="m">11</span><span class="p">:</span><span class="n">FromBase64Str</span>   
+        <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">31</span><span class="p">:</span><span class="m">10</span><span class="p">:</span><span class="n">GetParameterData</span>
+          <span class="p">(</span><span class="s">&quot;param&quot;</span><span class="p">)))))</span>
+</code></pre></div>
+
+
+<ul>
+<li>При помощи данного отчета генерируется не только модуль вычисления формул, но и модуль инструментирования, который выполняется на стороне приложения. Этот модуль встраивает сенсоры детектирования во все точки выполнения приложения, которые соответствуют неопределенным выражениям в отчете, а также устанавливает точки останова, которые перед переходом к уязвимой точке выполнения передают управление <span class="caps">RVP</span>:</li>
+</ul>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/instrumented-code.png"><img alt="Инструментированный код" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/instrumented-code.png"></a></p>
+<ul>
+<li>
+<p><span class="caps">RVP</span> не принимает на себя управление при обработке <span class="caps">HTTP</span>-запросов: приложению дается возможность обработать запрос до точки останова, стоящей перед уязвимой точкой выполнения (при достижении этой точки <span class="caps">RVP</span> уже соберет информацию со всех сенсоров детектирования, активированных до этой&nbsp;точки).</p>
+</li>
+<li>
+<p>При достижении точки останова обработка <span class="caps">HTTP</span>-запроса передается <span class="caps">RVP</span>, и формулы рассчитываются способом, описанным в предыдущем разделе, с одним существенным отличием: если в формуле содержится неопределенное выражение или выражение, которое невозможно вычислить при помощи <span class="caps">RVP</span> (по причине ссылок на внешние источники данных или отсутствия необходимой преобразующей функции в базе знаний), тогда значение выражения берется из информации, которая была собрана после активации сенсоров&nbsp;детектирования.</p>
+</li>
+<li>
+<p>При обнаружении атаки обработка запроса прекращается (и, следовательно, приложение не доходит до уязвимой точки&nbsp;выполнения).</p>
+</li>
+<li>
+<p>При отсутствии атаки задача по обработке запроса возвращается приложению до момента достижения следующей точки останова или до тех пор, пока не завершится обработка&nbsp;запроса.</p>
+</li>
+</ul>
+<p>Этот подход значительно расширяет возможности технологии <span class="caps">RVP</span>, устраняя ее недостатки в плане качества защиты&nbsp;приложений.</p>
+<p><a href="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/arasp-workflow.png"><img alt="Рабочий процесс ARASP" src="https://kochetkov.github.io/images/2017-09-20.do-wafs-dream-of-static-analyzers/arasp-workflow.png"></a></p>
+<h3>Преимущества <span class="caps">ARASP</span>: больше чем просто виртуальный&nbsp;патчинг</h3>
+<p>В <span class="caps">PT</span> <span class="caps">AI</span> можно настроить экспорт формул для всех потенциально уязвимых точек выполнения без выявления в них уязвимостей, что обеспечит полное покрытие всех опасных фрагментов кода приложения. Именно эта функция делает <span class="caps">ARASP</span> комплексным решением по защите приложений. В этом <span class="caps">WAF</span> нового поколения применяется модель белого ящика и используются формальные методы вместо эвристических. По сравнению с традиционным подходом <span class="caps">RASP</span> у этого решения есть несколько&nbsp;преимуществ:</p>
+<ul>
+<li>
+<p>незначительное снижение производительности (обработка запроса фрагментами приложения происходит параллельно с обработкой этого же запроса модулем <span class="caps">WAF</span> с работающим <span class="caps">ARASP</span>);</p>
+</li>
+<li>
+<p>минимальный урон стабильности приложения (инструментирование применяется только для тех точек исполнения, которые действительно необходимы для вычисления&nbsp;формул);</p>
+</li>
+<li>
+<p>точное (практически 100%) обнаружение атак благодаря использованию методов модели CompFG и формальных методов для работы на этих&nbsp;элементах.</p>
+</li>
+</ul>
+<p>Таким образом, <span class="caps">RVP</span> и <span class="caps">ARASP</span> являются многообещающим перспективным решением в обеспечении защиты приложений, и мы продолжим разрабатывать их в качестве основного вектора улучшения интеграции между <span class="caps">PT</span> Application Inspector и <span class="caps">PT</span> Application&nbsp;Firewall.</p>
             </div>
             <!-- /.entry-content -->
 <section class="well" id="related-posts">
@@ -321,14 +368,6 @@
 
 <section class="well well-sm">
     <ul class="list-group list-group-flush">
-
-    <li class="list-group-item"><h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4></li>
-    <div id="twitter_timeline">
-        <a class="twitter-timeline" data-chrome="noheader nofooter transparent" href="https://twitter.com/kochetkov_v" data-widget-id="353079324083097600">Tweets by kochetkov_v</a>
-    </div>
-
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
 
 
             <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Recent Posts</span></h4>

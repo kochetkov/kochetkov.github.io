@@ -30,10 +30,6 @@
             <meta property="article:tag" content="Application Inspector" />
             <meta property="article:author" content="Владимир Кочетков" />
 
-    <meta name="twitter:card" content="summary">
-        <meta name="twitter:site" content="@kochetkov_v">
-        <meta name="twitter:creator" content="@kochetkov_v">
-    <meta name="twitter:domain" content="https://kochetkov.github.io">
 
     <!-- Bootstrap -->
         <link rel="stylesheet" href="https://kochetkov.github.io/theme/css/bootstrap.kv.min.css" type="text/css"/>
@@ -48,7 +44,7 @@
 
 
 
-        <link href="https://kochetkov.github.io/feeds/blog.atom.xml" type="application/atom+xml" rel="alternate"
+        <link href="https://kochetkov.github.io/feeds/{slug}.atom.xml" type="application/atom+xml" rel="alternate"
               title="&#39;&#39;;!--&quot;&lt;kochetkov.vladimir&gt;=&amp;{()} Blog ATOM Feed"/>
 
 </head>
@@ -164,7 +160,7 @@
 </li>
 </ol>
 <p>As for other code fragment types, alas, we cannot use the static approach to analyze them. Moreover, when developing source code security analyzers, software engineers have to trade off between <span class="caps">EXPSPACE</span> and <span class="caps">EXPTIME</span> on a daily basis. When they do manage to reduce even special cases to a sub-exponential algorithm, they feel happy like little kids, because it’s really awesome! How do you think, what will be the power of the set of possible values of variable parm1 at the last execution&nbsp;point?</p>
-<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">parm1</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;parm1&quot;</span><span class="p">];</span>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span> <span class="n">parm1</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;parm1&quot;</span><span class="p">];</span>
 <span class="kt">var</span> <span class="n">count</span> <span class="p">=</span> <span class="kt">int</span><span class="p">.</span><span class="n">Parse</span><span class="p">(</span><span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;count&quot;</span><span class="p">]);</span>
 <span class="k">for</span> <span class="p">(</span><span class="kt">var</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">count</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
 <span class="p">{</span>
@@ -173,7 +169,7 @@
         <span class="n">parm1</span> <span class="p">=</span> <span class="n">i</span><span class="p">.</span><span class="n">ToString</span><span class="p">()</span> <span class="p">+</span> <span class="n">parm</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm</span><span class="p">);</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>That’s why we don’t have to worry too much about the theoretical limitations, because it is extremely unlikely that we would ever hit them when using any practically available computation power. However, the easing of the requirements has set the evolution of modern static code analyzers on the right course, so we should keep it in mind&nbsp;anyway.   </p>
@@ -184,7 +180,7 @@
 <h2>Mumbo Jumbo™&nbsp;Inside</h2>
 <p>There are several classic approaches to static code analysis, which use different models for producing the properties of the code under examination. The most primitive and obvious approach is signature search. It is based on looking for occurrences of some template in the syntax code presentation model (which is usually a token flow or an abstract syntax tree). Some implementations of that approach use slightly more-complex models (semantic tree, its mapping to the graph of some data flow, etc.). But on the whole, this approach is only useful as a secondary one: It allows us to mark suspicious parts of the code within a linear time, so that later we can check them manually. Enough said about this approach; if you are interested in it, please read the <a href="http://blog.ptsecurity.com/search/label/AST">series of articles</a> by Ivan&nbsp;Kochurkin.</p>
 <p>More-complex approaches use code execution (not presentation or semantic) models. Such models usually can answer this question: Can a data flow under external control reach such an control flow point that it creates a vulnerability? In most cases, the model is a <a href="https://en.wikipedia.org/wiki/Control_flow_graph">control flow graph</a> or a <a href="https://en.wikipedia.org/wiki/Data_flow_diagram">data flow diagram</a>, or a combination of them (for example, a <a href="https://www.tu-braunschweig.de/Medien-DB/sec/pubs/2014-ieeesp.pdf">code property graph</a>). Such approaches have an obvious drawback: When analyzing any nontrivial code, answering the above question is not enough to successfully detect a vulnerability. For example, here’s a code&nbsp;fragment:</p>
-<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">requestParam</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span> <span class="n">requestParam</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;param&quot;</span><span class="p">];</span>
 <span class="kt">var</span> <span class="n">filteredParam</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Empty</span><span class="p">;</span>
 
 <span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">symbol</span> <span class="k">in</span> <span class="n">requestParam</span><span class="p">)</span>
@@ -196,7 +192,7 @@
 <span class="p">}</span>
 
 <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">filteredParam</span><span class="p">);</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>Based on the created model, the trivial graph-based analyzer will confirm that the data flow <code>Request.Params["param"]</code> can reach the control flow point <code>Response.Write(filteredParam)</code>, and that there is a vulnerability to <span class="caps">XSS</span> attacks there. Actually, that data flow is effectively filtered and cannot carry the attack vector! There are many methods that allow us to cover special cases associated with data flow preprocessing, but ultimately each of them means finding a reasonable balance between false positives and false negatives, also known as Type I errors and type <span class="caps">II</span>&nbsp;errors.</p>
@@ -204,25 +200,25 @@
 <p>How can we minimize the number of errors of both types? We need to consider reachability conditions both for potentially vulnerable control flow points and for combinations of values of the data flows that can reach those points. Based on that information, we can create a system of equations whose set of solutions will give us all possible inputs that are necessary to reach the potentially vulnerable point in the program. The intersection of this set with the set of all possible attack vectors will produce the set of all inputs that bring the program to a vulnerable state. It sounds great, but how can we build a model that contains all necessary&nbsp;information?</p>
 <h2>Abstract interpretation and symbolic&nbsp;computation</h2>
 <p>Suppose, we need to find out the sign of the number produced by this expression: <code>-42 / 8 * 100500</code>. The simplest way to do it is to calculate the result and check if it is negative. The computation of an expression by using specific values of all arguments is known as “concrete computation.” But we can also solve this problem in a different way. Imagine that for some reason the concrete computation of this expression cannot be done. For example, because a variable has been added: <code>-42 / 8 * 100500 * x</code>. Let’s define an abstract arithmetic in which the result of operations on numbers is defined only by the signs, while the absolute values of all arguments are&nbsp;ignored:</p>
-<div class="highlight"><pre><span></span>(+a) = (+)
-(-a) = (-)
-(-) * (+) = (-)
-(-) / (+) = (-)  
-...
-(-) + (+) = (+-)
-...
-</pre></div>
+<div class="highlight"><pre><span></span><code><span class="err">(+a) = (+)</span>
+<span class="err">(-a) = (-)</span>
+<span class="err">(-) * (+) = (-)</span>
+<span class="err">(-) / (+) = (-)  </span>
+<span class="err">...</span>
+<span class="err">(-) + (+) = (+-)</span>
+<span class="err">...</span>
+</code></pre></div>
 
 
 <p>Let’s interpret the initial expression within this semantics: <code>(-) / (+) * (+) * (+)</code> -&gt; <code>(-) * (+) * (+)</code> -&gt; <code>(-) * (+)</code> -&gt; <code>(-)</code>. This approach will give an unambiguous answer to the question as long as the expression does not contain any addition or subtraction operators. Let’s modify our arithmetic to consider the absolute values of arguments,&nbsp;too:</p>
-<div class="highlight"><pre><span></span>(-a) * (+b) = (-c)
-(-a) / (+b) = (-c)  
-...
-(-a) + (+b) = 
-    a &lt;= b -&gt; (+)
-    a &gt;  b -&gt; (-)
-...
-</pre></div>
+<div class="highlight"><pre><span></span><code><span class="err">(-a) * (+b) = (-c)</span>
+<span class="err">(-a) / (+b) = (-c)  </span>
+<span class="err">...</span>
+<span class="err">(-a) + (+b) = </span>
+<span class="err">    a &lt;= b -&gt; (+)</span>
+<span class="err">    a &gt;  b -&gt; (-)</span>
+<span class="err">...</span>
+</code></pre></div>
 
 
 <p>If we interpret the expression <code>-42 / 8 * 100500 + x</code> based on the new semantics, the result will be <code>x &gt;= -527625 -&gt; (+), x &lt; -527625 -&gt; (-)</code>.</p>
@@ -246,7 +242,7 @@
 <p>Using a model based on symbolic computation allows us to implement all of the above requirements by-design, except for the ones related to theoretical limitations and sub-exponentiality. Our plan – to employ dynamic code analysis when static code analysis fails – is just what we&nbsp;need! </p>
 <h2>Partial computation, inverse functions, and deferred&nbsp;interpretation</h2>
 <p>Imagine that <span class="caps">IA</span> contains a knowledge base that describes the semantics of input transformation functions implemented in the standard language library or the program’s runtime environment, in the most popular frameworks and CMSs. For example, imagine that the functions Base64Decode and Base64Encode are mutually inverse, or that each call of StringBuilder.Append adds a new line to the string already stored in the temporary variable of that class, etc. Thanks to all that knowledge, <span class="caps">IA</span> doesn’t have to “fall through” into the library code whose analysis is subject to all computational limitations,&nbsp;too:</p>
-<div class="highlight"><pre><span></span><span class="c1">// The value of cond2 required for meeting the condition will be produced by the solver based on the knowledge base on inverse functions </span>
+<div class="highlight"><pre><span></span><code><span class="c1">// The value of cond2 required for meeting the condition will be produced by the solver based on the knowledge base on inverse functions </span>
 <span class="k">if</span> <span class="p">(</span><span class="n">Encoding</span><span class="p">.</span><span class="n">UTF8</span><span class="p">.</span><span class="n">GetString</span><span class="p">(</span><span class="n">Convert</span><span class="p">.</span><span class="n">FromBase64String</span><span class="p">(</span><span class="n">cond2</span><span class="p">))</span> <span class="p">==</span> <span class="s">&quot;true&quot;</span><span class="p">)</span>
 <span class="p">{</span>
     <span class="kt">var</span> <span class="n">sb</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StringBuilder</span><span class="p">();</span>
@@ -254,22 +250,22 @@
     <span class="c1">// The value of sb.ToString will be obtained by emulating the semantics of StringBuilder described in the knowledge base on library functions</span>
     <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">sb</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>    
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>But what if there is a call of a function in the code, but there is no description of that function in the <span class="caps">IA</span> knowledge base? Imagine that <span class="caps">IA</span> can use a virtual sandbox environment that allows it to run an arbitrary fragment of the code under examination in the given context and get the result of its execution. Let’s call it “partial computation.” In that case, before “falling through” into an unknown function and starting to interpret it abstractly, <span class="caps">IA</span> can try doing a trick called “partial fuzzing.” The general idea of that trick is that we can prebuild a knowledge base on library transformation functions and any combinations of sequential calls of such functions based on the already-known combinations of test data. Having that knowledge base, we can execute an unknown function on the same combinations of data and then compare the results to the samples from the knowledge base. If the results of executing the unknown function match the results of executing a known sequence of library functions, it would mean that now <span class="caps">IA</span> knows the semantics of the unknown function, so there is no need to interpret the&nbsp;function.</p>
 <p>But if the set of input values of all data flows are known for a code fragment that doesn’t contain any dangerous operators, <span class="caps">IA</span> can simply execute that fragment on all possible data flows and use the results instead of abstractly interpreting that fragment. That fragment can be of any computation power class, without any impact whatsoever on the results of its execution. Moreover, even if we do not know beforehand the the set of input values of data flows for a code fragment, <span class="caps">IA</span> can defer the interpretation of that fragment until it starts to solve the equation for the specific dangerous operator. At the solution step, an additional limitation about the presence of specific attack vectors in input data is imposed on the set of input values, which may allow us to make assumptions about the set of input values for the deferred fragment, and thereby partially compute it at this&nbsp;step.</p>
 <p>Moreover, at the solution step, <span class="caps">IA</span> can simply take the final reachability formula for the dangerous point and its arguments (it would be easier to build the formula by using the syntax and semantics of the language used in the code under examination) and fuzzy it thoroughly on all known vector values to get their subset that can pass through all filter functions of the&nbsp;formula:</p>
-<div class="highlight"><pre><span></span><span class="c1">// The value of the Response.Write argument that passes unchanged through the filter function can be obtained by fuzzing its formula by substituting the values of all possible XSS vectors in parm1 </span>
+<div class="highlight"><pre><span></span><code><span class="c1">// The value of the Response.Write argument that passes unchanged through the filter function can be obtained by fuzzing its formula by substituting the values of all possible XSS vectors in parm1 </span>
 <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">CustomFilterLibrary</span><span class="p">.</span><span class="n">CustomFilter</span><span class="p">.</span><span class="n">Filter</span><span class="p">(</span><span class="n">parm1</span><span class="p">));</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>The above approaches allow us to analyze a good share of Turing-complete code fragments but require significant efforts by the software engineers, who need to build knowledge bases and optimize the emulation of semantics of standard types, and to implement the sandbox for partial code execution (surely nobody wants for something like File.Delete to be executed in program loop during the analysis). The engineers also need to provide support for fuzzing of n-local unknown functions, integrate the concept of partial execution with the <span class="caps">SMT</span> solver, etc. Nevertheless, there are no substantial limitations to doing all these things, quite unlike the drawbacks of the classic <span class="caps">SAST</span>.</p>
 <h2>When the ugly duck-typing becomes a&nbsp;swan</h2>
 <p><img alt="Duck-typing" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/ducktyping.jpg"></p>
 <p>Imagine that we need to analyze the following&nbsp;code:</p>
-<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">argument</span> <span class="p">=</span> <span class="s">&quot;harmless value&quot;</span><span class="p">;</span>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span> <span class="n">argument</span> <span class="p">=</span> <span class="s">&quot;harmless value&quot;</span><span class="p">;</span>
 
 <span class="c1">// UnknownType - a type that is declared in a missing dependency </span>
 <span class="n">UnknownType</span><span class="p">.</span><span class="n">Property1</span> <span class="p">=</span> <span class="n">parm1</span><span class="p">;</span>
@@ -281,7 +277,7 @@
 <span class="p">}</span>
 
 <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">argument</span><span class="p">);</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>A human can easily detect a reachable <span class="caps">XSS</span> vulnerability in the above code fragment. However, the majority of the existing static code analyzers will miss it simply because they don’t know anything about the UnknownType type. But <span class="caps">IA</span> only needs to forget about static typing and use duck typing instead. The semantics of interpretation of such constructs should be completely dependent on the context of their use. Yes, the interpreter doesn’t know what <code>UnknownType.Property1</code> is – a property, a field, or even a delegate (a reference to a method in C#). But because operations on it are done as if it is a variable-member of a specific type, the interpreter can simply process it in the respective manner. And if, for example, <span class="caps">IA</span> finds the construct <code>UnknownType.Property1()</code> further in the code, it can simply interpret the call of the method, a reference to which has been earlier attributed to Property1. Etcetera, etcetera, in keeping with the best traditions of duck&nbsp;breeders.</p>
@@ -290,7 +286,7 @@
 <p>Some years ago, a customer of ours asked us to analyze the security of a system he was developing. Among the introductory data, he enclosed a report of code analysis done by an analyzing product that was the leader of the <span class="caps">SAST</span> tools market at that time. The report contained about two thousand entries, most of which eventually proved to be false positives. But the worst part was what was missing in the report. By manually analyzing the code, we have found dozens of vulnerable points that had been missed by the leading analyzer! So using such analyzers does more harm than good: You waste your time on manually checking all false positives, and the presence of false negatives creates an illusion of security. By the way, that case was one of the reasons why we’ve decided to develop our own&nbsp;analyzer.</p>
 <h2><span class="dquo">&#8220;</span>Talk is cheap. Show me the&nbsp;code.&#8221;</h2>
 <p>It would be amiss not to complete the article with a small code sample that allows you to check the “degree of ideality” of any analyzer in practice. Presto! Below you can see the code that includes all basic cases covered by the approach to abstract interpretation described in this article, but not covered by the more-primitive approaches. Each case has been implemented as trivially as possible and contains few instructions. Though the example is intended for C#/<span class="caps">ASP</span>.Net WebForms, it does not contain any specifics and can be easily translated into any other <span class="caps">OOP</span> code or adapted for any Web&nbsp;framework. </p>
-<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">parm1</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;parm1&quot;</span><span class="p">];</span>
+<div class="highlight"><pre><span></span><code><span class="kt">var</span> <span class="n">parm1</span> <span class="p">=</span> <span class="n">Request</span><span class="p">.</span><span class="n">Params</span><span class="p">[</span><span class="s">&quot;parm1&quot;</span><span class="p">];</span>
 <span class="k">const</span> <span class="kt">string</span> <span class="n">cond1</span> <span class="p">=</span> <span class="s">&quot;ZmFsc2U=&quot;</span><span class="p">;</span> <span class="c1">// &quot;false&quot; in base64</span>
 <span class="n">Action</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">pvo</span> <span class="p">=</span> <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">;</span>
 
@@ -361,7 +357,7 @@
     <span class="c1">// An analyzer that does not interpret the semantics of standard library types will report a vulnerability here</span>
     <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">parm1</span><span class="p">);</span>
 <span class="p">}</span>
-</pre></div>
+</code></pre></div>
 
 
 <p>The result of analyzing this code should be a report of a single vulnerability to <span class="caps">XSS</span> attacks in the expression <code>pvo(parm1)</code>.</p>
@@ -414,14 +410,6 @@
 
 <section class="well well-sm">
     <ul class="list-group list-group-flush">
-
-    <li class="list-group-item"><h4><i class="fa fa-twitter fa-lg"></i><span class="icon-label">Latest Tweets</span></h4></li>
-    <div id="twitter_timeline">
-        <a class="twitter-timeline" data-chrome="noheader nofooter transparent" href="https://twitter.com/kochetkov_v" data-widget-id="353079324083097600">Tweets by kochetkov_v</a>
-    </div>
-
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
 
 
             <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Recent Posts</span></h4>
