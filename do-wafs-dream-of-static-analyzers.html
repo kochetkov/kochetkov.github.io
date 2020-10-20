@@ -156,7 +156,6 @@
 <span class="m">20</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span> <span class="p">+</span> <span class="n">response</span> <span class="p">+</span> <span class="s">&quot;&lt;/b&gt;&quot;</span><span class="p">);&lt;/</span><span class="n">source</span><span class="p">&gt;</span>
 </code></pre></div>
 
-
 <p>В результате анализа этого кода для вектора атаки будет выведена символическая формула условного множества его&nbsp;значений: </p>
 <p><code>{condition = "secret" ⇒ param ∈ { XSShtml-text }}, где XSShtml-text — множество возможных векторов XSS-атаки в контексте TEXT, описанном в грамматике HTML</code></p>
 <p>Из этой формулы может быть выведен как эксплойт, так и виртуальный патч. На основе дескриптора виртуального патча <span class="caps">WAF</span> формирует правила фильтрации, позволяющие блокировать все <span class="caps">HTTP</span>-запросы, выполнение которых может привести к эксплуатации найденной&nbsp;уязвимости. </p>
@@ -189,7 +188,6 @@
 <span class="m">20</span> 
 <span class="m">21</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
 </code></pre></div>
-
 
 <p>Разница с предыдущим примером лишь в том, что теперь оба параметра запроса подвергаются некоторому преобразованию и условие на параметр <code>secret</code> ослаблено до включения подстроки. Формула вектора атаки в результате анализа этого кода примет&nbsp;вид: </p>
 <p><code>(String.Contains (CustomDecode (condition)) ("secret"))  ⇒ param ∈ (CustomDecode { XSShtml-text })</code></p>
@@ -285,7 +283,6 @@
         <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">31</span><span class="p">:</span><span class="m">10</span><span class="p">:</span><span class="n">GetParameterData</span>
           <span class="p">(</span><span class="s">&quot;param&quot;</span><span class="p">)))))</span>
 </code></pre></div>
-
 
 <ul>
 <li>При помощи данного отчета генерируется не только модуль вычисления формул, но и модуль инструментирования, который выполняется на стороне приложения. Этот модуль встраивает сенсоры детектирования во все точки выполнения приложения, которые соответствуют неопределенным выражениям в отчете, а также устанавливает точки останова, которые перед переходом к уязвимой точке выполнения передают управление <span class="caps">RVP</span>:</li>

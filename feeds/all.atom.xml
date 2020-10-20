@@ -35,7 +35,6 @@
 &lt;span class="m"&gt;20&lt;/span&gt;  &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&amp;lt;b&amp;gt;&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;+&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="p"&gt;+&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;/b&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&amp;lt;/&lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;By analyzing this attack vector code, we can generate a symbolic formula for the set of attack vector&amp;nbsp;values: &lt;/p&gt;
 &lt;p&gt;&lt;code&gt;{condition = "secret" ⇒ param ∈ { XSShtml-text }}&lt;/code&gt;, where XSShtml-text is the set of possible vectors of an &lt;span class="caps"&gt;XSS&lt;/span&gt; attack in the context of &lt;span class="caps"&gt;TEXT&lt;/span&gt;, as described in the &lt;span class="caps"&gt;HTML&lt;/span&gt;&amp;nbsp;grammar.&lt;/p&gt;
 &lt;p&gt;This formula may yield both an exploit and a virtual patch. The descriptor of the &lt;span class="caps"&gt;WAF&lt;/span&gt; virtual patch can be used to generate filtering rules to block all &lt;span class="caps"&gt;HTTP&lt;/span&gt; requests capable of exploiting the relevant&amp;nbsp;vulnerability.&lt;/p&gt;
@@ -68,7 +67,6 @@
 &lt;span class="m"&gt;20&lt;/span&gt; 
 &lt;span class="m"&gt;21&lt;/span&gt;  &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;The only difference from the previous example is that both request parameters now undergo a transformation and the condition for the &lt;code&gt;secret&lt;/code&gt; parameter is weakened until the sub-string is included back in. The attack vector formula, based on analysis of this new code, is as&amp;nbsp;follows: &lt;/p&gt;
 &lt;p&gt;&lt;code&gt;(String.Contains (CustomDecode (condition)) ("secret"))  ⇒ param ∈ (CustomDecode { XSShtml-text })&lt;/code&gt;&lt;/p&gt;
@@ -165,7 +163,6 @@
           &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;param&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)))))&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;ul&gt;
 &lt;li&gt;The report is used to generate not only a formula computation module, but also an instrumentation module that runs on the application side. This module embeds detector sensors at all execution points in the application that correspond uncertain expressions in the report. The module also inserts breakpoints that hand off control to the &lt;span class="caps"&gt;RVP&lt;/span&gt; before proceeding to the vulnerable execution&amp;nbsp;point:&lt;/li&gt;
 &lt;/ul&gt;
@@ -218,7 +215,6 @@
 &lt;span class="m"&gt;20&lt;/span&gt;  &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;&amp;lt;b&amp;gt;&amp;quot;&lt;/span&gt; &lt;span class="p"&gt;+&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="p"&gt;+&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;&amp;lt;/b&amp;gt;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&amp;lt;/&lt;/span&gt;&lt;span class="n"&gt;source&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;В результате анализа этого кода для вектора атаки будет выведена символическая формула условного множества его&amp;nbsp;значений: &lt;/p&gt;
 &lt;p&gt;&lt;code&gt;{condition = "secret" ⇒ param ∈ { XSShtml-text }}, где XSShtml-text — множество возможных векторов XSS-атаки в контексте TEXT, описанном в грамматике HTML&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;Из этой формулы может быть выведен как эксплойт, так и виртуальный патч. На основе дескриптора виртуального патча &lt;span class="caps"&gt;WAF&lt;/span&gt; формирует правила фильтрации, позволяющие блокировать все &lt;span class="caps"&gt;HTTP&lt;/span&gt;-запросы, выполнение которых может привести к эксплуатации найденной&amp;nbsp;уязвимости. &lt;/p&gt;
@@ -251,7 +247,6 @@
 &lt;span class="m"&gt;20&lt;/span&gt; 
 &lt;span class="m"&gt;21&lt;/span&gt;  &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;response&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;Разница с предыдущим примером лишь в том, что теперь оба параметра запроса подвергаются некоторому преобразованию и условие на параметр &lt;code&gt;secret&lt;/code&gt; ослаблено до включения подстроки. Формула вектора атаки в результате анализа этого кода примет&amp;nbsp;вид: &lt;/p&gt;
 &lt;p&gt;&lt;code&gt;(String.Contains (CustomDecode (condition)) ("secret"))  ⇒ param ∈ (CustomDecode { XSShtml-text })&lt;/code&gt;&lt;/p&gt;
@@ -347,7 +342,6 @@
         &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;Default&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;aspx&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;cs&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="m"&gt;31&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="m"&gt;10&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;GetParameterData&lt;/span&gt;
           &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;param&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)))))&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;ul&gt;
 &lt;li&gt;При помощи данного отчета генерируется не только модуль вычисления формул, но и модуль инструментирования, который выполняется на стороне приложения. Этот модуль встраивает сенсоры детектирования во все точки выполнения приложения, которые соответствуют неопределенным выражениям в отчете, а также устанавливает точки останова, которые перед переходом к уязвимой точке выполнения передают управление &lt;span class="caps"&gt;RVP&lt;/span&gt;:&lt;/li&gt;
@@ -465,7 +459,6 @@
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parm&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;Вот поэтому о теоретических ограничениях можно не особо беспокоиться, поскольку упереться в них на текущих вычислительных мощностях будет крайне затруднительно. Однако же, перечисленные послабления этих ограничений задают правильное направление развития современных статических анализаторов, поэтому иметь в виду их все же&amp;nbsp;стоит.   &lt;/p&gt;
 &lt;h2&gt;&lt;span class="caps"&gt;DAST&lt;/span&gt;, &lt;span class="caps"&gt;IAST&lt;/span&gt; и&amp;nbsp;все-все-все&lt;/h2&gt;
 &lt;p&gt;В противовес статическому подходу, работающему с кодом программы без его фактического выполнения, динамический (Dynamic Application Security Testing, &lt;span class="caps"&gt;DAST&lt;/span&gt;) подразумевает наличие развернутой среды выполнения приложения и ее прогон на наиболее интересных с точки зрения анализа наборах входных данных. Упрощая, его можно охарактеризовать, как метод «осознанного научного тыка» («давайте передадим программе вот такие данные, характерные вот для такой атаки и посмотрим, что же из этого выйдет»). Его недостатки очевидны: далеко не всегда есть возможность быстро развернуть анализируемую систему (а зачастую и просто собрать), переход системы в какое-либо состояние может быть следствием обработки предыдущих наборов данных, да и для всестороннего анализа поведения реальной системы количество наборов входных данных должно быть настолько велико, что о его конечности можно рассуждать исключительно&amp;nbsp;теоретически.&lt;/p&gt;
@@ -488,7 +481,6 @@
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filteredParam&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;такой анализатор выведет из построенной модели утвердительный ответ о достижимости потоком данных &lt;code&gt;Request.Params["param"]&lt;/code&gt; точки выполнения &lt;code&gt;Response.Write(filteredParam)&lt;/code&gt; и существовании в данной точке уязвимости к &lt;span class="caps"&gt;XSS&lt;/span&gt;. В то время, как на самом деле, данный поток эффективно фильтруется и не может являться носителем вектора атаки. Существует множество способов покрыть частные случаи, связанные с предварительной обработкой потоков данных, но все они в конечном итоге сводятся к разумному балансу между ложными срабатываниями первого и второго&amp;nbsp;типа.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Type 1 &amp;amp; 2 errors" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/type12errors.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;Каким образом можно минимизировать появление ошибок обоих типов? Для этого необходимо учитывать условия достижимости как потенциально уязвимых точек выполнения, так и множеств значений потоков данных, приходящих в такие точки. На основе этой информации становится возможным построить систему уравнений, множество решений которой даст все возможные наборы входных данных, необходимые для того, чтобы прийти в потенциально уязвимую точку программы. Пересечение этого множества со множеством всех возможных векторов атаки, даст множество всех наборов входных данных, приводящих программу в уязвимое состояние. Звучит отлично, но как получить модель, которая содержала бы всю необходимую&amp;nbsp;информацию?&lt;/p&gt;
@@ -503,7 +495,6 @@
 &lt;span class="err"&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;Интерпретируя исходное выражение в рамках данной семантики, получаем: &lt;code&gt;(-) / (+) * (+) * (+)&lt;/code&gt; -&amp;gt; &lt;code&gt;(-) * (+) * (+)&lt;/code&gt; -&amp;gt; &lt;code&gt;(-) * (+)&lt;/code&gt; -&amp;gt; &lt;code&gt;(-)&lt;/code&gt;. Этот подход будет давать однозначный ответ на поставленную задачу до тех пор, пока в выражении не появятся операции сложения или вычитания. Давайте дополним нашу арифметику таким образом, чтобы значения аргументов операций также&amp;nbsp;учитывались:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;(-a) * (+b) = (-c)&lt;/span&gt;
 &lt;span class="err"&gt;(-a) / (+b) = (-c)  &lt;/span&gt;
@@ -513,7 +504,6 @@
 &lt;span class="err"&gt;    a &amp;gt;  b -&amp;gt; (-)&lt;/span&gt;
 &lt;span class="err"&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;Интерпретируя выражение &lt;code&gt;-42 / 8 * 100500 + x&lt;/code&gt; в новой семантике получим результат &lt;code&gt;x &amp;gt;= -527625 -&amp;gt; (+), x &amp;lt; -527625 -&amp;gt; (-)&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Описанный выше подход называется &lt;a href="https://en.wikipedia.org/wiki/Abstract_interpretation"&gt;абстрактной интерпретацией&lt;/a&gt; и формально определяется, как устойчивая аппроксимация семантики выражений, основанная на монотонных функциях над упорядоченными множествами. Говоря более простым языком, это интерпретация выражений без их конкретного вычисления с целью сбора информации в рамках заданного семантического поля. Если мы плавно перейдем от интерпретации отдельных выражений к интерпретации кода программы на каком-либо языке, а в качестве семантического поля определим семантику самого языка, дополненную правилом оперировать всеми входными данными, как неизвестными переменными (символическими значениями), то мы получим подход, именуемый &lt;a href="https://en.wikipedia.org/wiki/Symbolic_execution"&gt;&amp;#8220;символическим выполнением&amp;#8221;&lt;/a&gt; и лежащий в основе большинства перспективных направлений статического анализа&amp;nbsp;кода.&lt;/p&gt;
@@ -546,14 +536,12 @@
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;Но что делать, если в коде встречается вызов функции, не описанной в базе знаний &lt;span class="caps"&gt;IA&lt;/span&gt;? Давайте представим, что в распоряжении &lt;span class="caps"&gt;IA&lt;/span&gt; есть некая виртуальная среда-песочница, позволяющая запустить произвольный фрагмент анализируемого кода в заданном контексте и получить результат его выполнения. Назовём это &amp;#8220;частичным вычислением&amp;#8221;. Тогда, перед тем, как честно «провалиться» в неизвестную функцию и начинать её абстрактно интерпретировать, &lt;span class="caps"&gt;IA&lt;/span&gt; может попробовать проделать трюк, называемый «частичным фаззингом». Его общая идея заключается в предварительной подготовке базы знаний по библиотечным трансформирующим функциям и сочетаниям их последовательных вызовов на заранее известных наборах пробных данных. Имея такую базу, можно выполнить неизвестную функцию на тех же наборах данных и сравнить полученные результаты с образцами из базы знаний. Если результаты выполнения неизвестной функции совпадут с результатами выполнения известной цепочки библиотечных функций, то это будет значить, что &lt;span class="caps"&gt;IA&lt;/span&gt; теперь известна семантика неизвестной функции и в ее интерпретации нет&amp;nbsp;необходимости.&lt;/p&gt;
 &lt;p&gt;Если же для какого-то фрагмента известны множества значений всех потоков данных, приходящих в этот фрагмент, а сам фрагмент не содержит опасных операций, то &lt;span class="caps"&gt;IA&lt;/span&gt; может просто выполнить его на всех возможных потоках данных и использовать полученные результаты вместо абстрактной интерпретации данного фрагмента кода. Причем этот фрагмент может относиться к любому классу вычислительной сложности и это никак не отразится на результатах его выполнения. Более того, даже если множества значений потоков данных, приходящих во фрагмент, заранее неизвестны, &lt;span class="caps"&gt;IA&lt;/span&gt; может отложить интерпретацию этого фрагмента до тех пор, пока не начнется решение уравнения для конкретной опасной операции. На этапе решения на множество значений входных данных накладывается дополнительное ограничение о наличии во входных данных векторов тех или иных атак, что может позволить предположить также и множество значений входных данных, приходящих в отложенный фрагмент и, тем самым, частично вычислить его на данном&amp;nbsp;этапе.&lt;/p&gt;
 &lt;p&gt;Даже более того, на этапе решения ничего не мешает &lt;span class="caps"&gt;IA&lt;/span&gt; взять конечную формулу достижимости опасной точки и ее аргументов (которую проще всего строить в синтаксисе и семантике того же языка, на котором написан анализируемый код) и &amp;#8220;профаззить&amp;#8221; ее всеми известными значениями векторов на предмет получения их подмножества, проходящего через все фильтрующие функции&amp;nbsp;формулы:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;// Ззначение аргумента Response.Write, проходящее через фильтрующую функцию без изменений, может быть получено в результате фаззинга его формулы постановкой в parm1 значений всех возможных векторов XSS &lt;/span&gt;
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CustomFilterLibrary&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CustomFilter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parm1&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;Описанные выше подходы позволяют справиться с анализом значительной части фрагментов тьюринг-полного кода, но требуют существенной инженерной проработки как в части наполнения базы знаний и оптимизации эмулирования семантики стандартных типов, так и в части реализации песочницы для частичного выполнения кода (никто не захочет, чтобы в процессе анализа внезапно выполнилось что-то вроде File.Delete в цикле), а также поддержки фаззинга n-местных неизвестных функций, интеграции концепции частичного вычисления с &lt;span class="caps"&gt;SMT&lt;/span&gt;-солвером и т.п. Однако же, никаких существенных ограничений на их реализацию нет, в отличии от граблей классического &lt;span class="caps"&gt;SAST&lt;/span&gt;.&lt;/p&gt;
 &lt;h2&gt;Когда гадкий duck-typing становится&amp;nbsp;лебедем&lt;/h2&gt;
@@ -572,7 +560,6 @@
 
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argument&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;Человек без труда увидит здесь достижимую уязвимость к &lt;span class="caps"&gt;XSS&lt;/span&gt;. А вот большинство существующих статических анализаторов ее благополучно прошляпят в связи с тем, что им ничего не известно о типе UnknownType. Однако все, что здесь требуется от &lt;span class="caps"&gt;IA&lt;/span&gt; - это забыть о статической типизации и перейти к утиной. Семантика интерпретации таких конструкций должна полностью зависеть от контекста их использования. Да, интерпретатор ничего не знает о том, чем является &lt;code&gt;UnknownType.Property1&lt;/code&gt; - свойством, полем, или даже делегатом (ссылкой на метод в C#). Но поскольку операции с ней осуществляются как с переменной-мембером какого-то типа, интерпретатору ничего не мешает обрабатывать их именно таким образом. А если, к примеру, далее по коду встретится конструкция &lt;code&gt;UnknownType.Property1()&lt;/code&gt;, то ничто не мешает интерпретировать вызов того метода, ссылка на который была ранее присвоена Property1. И так далее, в лучших традициях заводчиков&amp;nbsp;уток-чемпионов.&lt;/p&gt;
 &lt;h2&gt;Подводя&amp;nbsp;итоги&lt;/h2&gt;
@@ -653,7 +640,6 @@
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;Результатом анализа данного кода должно являться сообщение о единственной уязвимости к атакам &lt;span class="caps"&gt;XSS&lt;/span&gt; в выражении &lt;code&gt;pvo(parm1)&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Вступить и компилировать с готовым к сканированию проектом можно &lt;a href="https://kochetkov.github.io/uploads/IAMeter.zip"&gt;здесь&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Но, как говорится, &amp;#8220;лучше один раз увидеть&amp;#8230;&amp;#8221; и, в первую очередь, мы проверили на соответствие &lt;span class="caps"&gt;IA&lt;/span&gt; разрабатываемый нами анализатор, по чистой случайности называющийся &lt;a href="http://ai.ptsecurity.ru/"&gt;&lt;span class="caps"&gt;AI&lt;/span&gt;&lt;/a&gt;:  &lt;/p&gt;
@@ -709,7 +695,6 @@
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parm&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;That’s why we don’t have to worry too much about the theoretical limitations, because it is extremely unlikely that we would ever hit them when using any practically available computation power. However, the easing of the requirements has set the evolution of modern static code analyzers on the right course, so we should keep it in mind&amp;nbsp;anyway.   &lt;/p&gt;
 &lt;h2&gt;&lt;span class="caps"&gt;DAST&lt;/span&gt;, &lt;span class="caps"&gt;IAST&lt;/span&gt;, and all, all,&amp;nbsp;all&lt;/h2&gt;
 &lt;p&gt;Unlike the static approach, where program code is analyzed without actually being executed, the dynamic approach (Dynamic Application Security Testing, &lt;span class="caps"&gt;DAST&lt;/span&gt;) requires having a runtime environment and executing the program on some inputs that are most useful for analysis purposes. Simply speaking, we can call &lt;span class="caps"&gt;DAST&lt;/span&gt; a “method of informed trial and error”: “Let’s feed these input data, which are characteristic for that kind of attack, to the program and see what happens.” This method has obvious drawbacks: In many cases we can’t quickly deploy the system to be analyzed (sometimes we can’t even build it), the system’s transition to a certain state may be the result of processing the previous inputs, and a comprehensive analysis of a real system’s behavior requires feeding it so many inputs that it is utterly impractical to try testing the system on each of&amp;nbsp;them.&lt;/p&gt;
@@ -732,7 +717,6 @@
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;filteredParam&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;Based on the created model, the trivial graph-based analyzer will confirm that the data flow &lt;code&gt;Request.Params["param"]&lt;/code&gt; can reach the control flow point &lt;code&gt;Response.Write(filteredParam)&lt;/code&gt;, and that there is a vulnerability to &lt;span class="caps"&gt;XSS&lt;/span&gt; attacks there. Actually, that data flow is effectively filtered and cannot carry the attack vector! There are many methods that allow us to cover special cases associated with data flow preprocessing, but ultimately each of them means finding a reasonable balance between false positives and false negatives, also known as Type I errors and type &lt;span class="caps"&gt;II&lt;/span&gt;&amp;nbsp;errors.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Type 1 &amp;amp; 2 errors" src="https://kochetkov.github.io/images/2016-07-08.sast-theory-practice-and-prospects/type12errors.jpg"&gt;&lt;/p&gt;
 &lt;p&gt;How can we minimize the number of errors of both types? We need to consider reachability conditions both for potentially vulnerable control flow points and for combinations of values of the data flows that can reach those points. Based on that information, we can create a system of equations whose set of solutions will give us all possible inputs that are necessary to reach the potentially vulnerable point in the program. The intersection of this set with the set of all possible attack vectors will produce the set of all inputs that bring the program to a vulnerable state. It sounds great, but how can we build a model that contains all necessary&amp;nbsp;information?&lt;/p&gt;
@@ -747,7 +731,6 @@
 &lt;span class="err"&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;Let’s interpret the initial expression within this semantics: &lt;code&gt;(-) / (+) * (+) * (+)&lt;/code&gt; -&amp;gt; &lt;code&gt;(-) * (+) * (+)&lt;/code&gt; -&amp;gt; &lt;code&gt;(-) * (+)&lt;/code&gt; -&amp;gt; &lt;code&gt;(-)&lt;/code&gt;. This approach will give an unambiguous answer to the question as long as the expression does not contain any addition or subtraction operators. Let’s modify our arithmetic to consider the absolute values of arguments,&amp;nbsp;too:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="err"&gt;(-a) * (+b) = (-c)&lt;/span&gt;
 &lt;span class="err"&gt;(-a) / (+b) = (-c)  &lt;/span&gt;
@@ -757,7 +740,6 @@
 &lt;span class="err"&gt;    a &amp;gt;  b -&amp;gt; (-)&lt;/span&gt;
 &lt;span class="err"&gt;...&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;If we interpret the expression &lt;code&gt;-42 / 8 * 100500 + x&lt;/code&gt; based on the new semantics, the result will be &lt;code&gt;x &amp;gt;= -527625 -&amp;gt; (+), x &amp;lt; -527625 -&amp;gt; (-)&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The above approach is called &lt;a href="https://en.wikipedia.org/wiki/Abstract_interpretation"&gt;abstract interpretation&lt;/a&gt;. It is formally defined as a stable approximation of the semantics of expressions, based on monotonic functions over ordered sets. Simply speaking, it is an interpretation of expressions without a concrete computation of them, intended to gather information within the given semantic field. Let’s smoothly go from interpreting some expressions to interpreting program code in some programming language. As for the semantic field, let’s define the semantics of the language, complemented with the rule to handle all inputs as unknown variables (symbolic values). The result is an approach known as “[symbolic execution,]”(https://en.wikipedia.org/wiki/Symbolic_execution) which lies in the basis of most promising &lt;span class="caps"&gt;SAST&lt;/span&gt;&amp;nbsp;tools.&lt;/p&gt;
@@ -790,14 +772,12 @@
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-
 &lt;p&gt;But what if there is a call of a function in the code, but there is no description of that function in the &lt;span class="caps"&gt;IA&lt;/span&gt; knowledge base? Imagine that &lt;span class="caps"&gt;IA&lt;/span&gt; can use a virtual sandbox environment that allows it to run an arbitrary fragment of the code under examination in the given context and get the result of its execution. Let’s call it “partial computation.” In that case, before “falling through” into an unknown function and starting to interpret it abstractly, &lt;span class="caps"&gt;IA&lt;/span&gt; can try doing a trick called “partial fuzzing.” The general idea of that trick is that we can prebuild a knowledge base on library transformation functions and any combinations of sequential calls of such functions based on the already-known combinations of test data. Having that knowledge base, we can execute an unknown function on the same combinations of data and then compare the results to the samples from the knowledge base. If the results of executing the unknown function match the results of executing a known sequence of library functions, it would mean that now &lt;span class="caps"&gt;IA&lt;/span&gt; knows the semantics of the unknown function, so there is no need to interpret the&amp;nbsp;function.&lt;/p&gt;
 &lt;p&gt;But if the set of input values of all data flows are known for a code fragment that doesn’t contain any dangerous operators, &lt;span class="caps"&gt;IA&lt;/span&gt; can simply execute that fragment on all possible data flows and use the results instead of abstractly interpreting that fragment. That fragment can be of any computation power class, without any impact whatsoever on the results of its execution. Moreover, even if we do not know beforehand the the set of input values of data flows for a code fragment, &lt;span class="caps"&gt;IA&lt;/span&gt; can defer the interpretation of that fragment until it starts to solve the equation for the specific dangerous operator. At the solution step, an additional limitation about the presence of specific attack vectors in input data is imposed on the set of input values, which may allow us to make assumptions about the set of input values for the deferred fragment, and thereby partially compute it at this&amp;nbsp;step.&lt;/p&gt;
 &lt;p&gt;Moreover, at the solution step, &lt;span class="caps"&gt;IA&lt;/span&gt; can simply take the final reachability formula for the dangerous point and its arguments (it would be easier to build the formula by using the syntax and semantics of the language used in the code under examination) and fuzzy it thoroughly on all known vector values to get their subset that can pass through all filter functions of the&amp;nbsp;formula:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;code&gt;&lt;span class="c1"&gt;// The value of the Response.Write argument that passes unchanged through the filter function can be obtained by fuzzing its formula by substituting the values of all possible XSS vectors in parm1 &lt;/span&gt;
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;CustomFilterLibrary&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;CustomFilter&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Filter&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parm1&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;The above approaches allow us to analyze a good share of Turing-complete code fragments but require significant efforts by the software engineers, who need to build knowledge bases and optimize the emulation of semantics of standard types, and to implement the sandbox for partial code execution (surely nobody wants for something like File.Delete to be executed in program loop during the analysis). The engineers also need to provide support for fuzzing of n-local unknown functions, integrate the concept of partial execution with the &lt;span class="caps"&gt;SMT&lt;/span&gt; solver, etc. Nevertheless, there are no substantial limitations to doing all these things, quite unlike the drawbacks of the classic &lt;span class="caps"&gt;SAST&lt;/span&gt;.&lt;/p&gt;
 &lt;h2&gt;When the ugly duck-typing becomes a&amp;nbsp;swan&lt;/h2&gt;
@@ -816,7 +796,6 @@
 
 &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;argument&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;A human can easily detect a reachable &lt;span class="caps"&gt;XSS&lt;/span&gt; vulnerability in the above code fragment. However, the majority of the existing static code analyzers will miss it simply because they don’t know anything about the UnknownType type. But &lt;span class="caps"&gt;IA&lt;/span&gt; only needs to forget about static typing and use duck typing instead. The semantics of interpretation of such constructs should be completely dependent on the context of their use. Yes, the interpreter doesn’t know what &lt;code&gt;UnknownType.Property1&lt;/code&gt; is – a property, a field, or even a delegate (a reference to a method in C#). But because operations on it are done as if it is a variable-member of a specific type, the interpreter can simply process it in the respective manner. And if, for example, &lt;span class="caps"&gt;IA&lt;/span&gt; finds the construct &lt;code&gt;UnknownType.Property1()&lt;/code&gt; further in the code, it can simply interpret the call of the method, a reference to which has been earlier attributed to Property1. Etcetera, etcetera, in keeping with the best traditions of duck&amp;nbsp;breeders.&lt;/p&gt;
 &lt;h2&gt;Taking&amp;nbsp;stock&lt;/h2&gt;
@@ -896,7 +875,6 @@
     &lt;span class="n"&gt;Response&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Write&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;parm1&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
 
 &lt;p&gt;The result of analyzing this code should be a report of a single vulnerability to &lt;span class="caps"&gt;XSS&lt;/span&gt; attacks in the expression &lt;code&gt;pvo(parm1)&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;You can join us and compile a ready-to-scan project &lt;a href="https://kochetkov.github.io/uploads/IAMeter.zip"&gt;here&lt;/a&gt;&lt;/p&gt;

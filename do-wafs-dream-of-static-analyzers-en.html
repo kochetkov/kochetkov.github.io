@@ -157,7 +157,6 @@
 <span class="m">20</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="s">&quot;&lt;b&gt;&quot;</span> <span class="p">+</span> <span class="n">response</span> <span class="p">+</span> <span class="s">&quot;&lt;/b&gt;&quot;</span><span class="p">);&lt;/</span><span class="n">source</span><span class="p">&gt;</span>
 </code></pre></div>
 
-
 <p>By analyzing this attack vector code, we can generate a symbolic formula for the set of attack vector&nbsp;values: </p>
 <p><code>{condition = "secret" ⇒ param ∈ { XSShtml-text }}</code>, where XSShtml-text is the set of possible vectors of an <span class="caps">XSS</span> attack in the context of <span class="caps">TEXT</span>, as described in the <span class="caps">HTML</span>&nbsp;grammar.</p>
 <p>This formula may yield both an exploit and a virtual patch. The descriptor of the <span class="caps">WAF</span> virtual patch can be used to generate filtering rules to block all <span class="caps">HTTP</span> requests capable of exploiting the relevant&nbsp;vulnerability.</p>
@@ -190,7 +189,6 @@
 <span class="m">20</span> 
 <span class="m">21</span>  <span class="n">Response</span><span class="p">.</span><span class="n">Write</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
 </code></pre></div>
-
 
 <p>The only difference from the previous example is that both request parameters now undergo a transformation and the condition for the <code>secret</code> parameter is weakened until the sub-string is included back in. The attack vector formula, based on analysis of this new code, is as&nbsp;follows: </p>
 <p><code>(String.Contains (CustomDecode (condition)) ("secret"))  ⇒ param ∈ (CustomDecode { XSShtml-text })</code></p>
@@ -286,7 +284,6 @@
         <span class="p">(</span><span class="n">Default</span><span class="p">.</span><span class="n">aspx</span><span class="p">.</span><span class="n">cs</span><span class="p">:</span><span class="m">31</span><span class="p">:</span><span class="m">10</span><span class="p">:</span><span class="n">GetParameterData</span>
           <span class="p">(</span><span class="s">&quot;param&quot;</span><span class="p">)))))</span>
 </code></pre></div>
-
 
 <ul>
 <li>The report is used to generate not only a formula computation module, but also an instrumentation module that runs on the application side. This module embeds detector sensors at all execution points in the application that correspond uncertain expressions in the report. The module also inserts breakpoints that hand off control to the <span class="caps">RVP</span> before proceeding to the vulnerable execution&nbsp;point:</li>
